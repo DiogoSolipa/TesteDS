@@ -763,6 +763,112 @@
     .questions{border-left:none;padding-left:0}
     .phone{transform: scale(.85)}
   }
+
+  /* ===== PILLAR CHIPS (home screen, AIR-style) ===== */
+  .pillars-strip{
+    padding: 6px 14px 8px;
+    display:flex;gap:6px;overflow-x:auto;flex-shrink:0;
+  }
+  .pillars-strip::-webkit-scrollbar{display:none}
+  .p-chip{
+    flex-shrink:0;
+    padding: 5px 10px;
+    border-radius:999px;border:1px solid var(--rule);
+    background:var(--paper);font-family:var(--sans);font-size:10px;
+    font-weight:600;color:var(--ink);cursor:pointer;white-space:nowrap;
+    transition: border-color .2s, background .2s;
+  }
+  .p-chip:hover{border-color:var(--red);background:var(--red-tint);color:var(--red)}
+
+  /* ===== CHAT VIEW ===== */
+  .chat-head{
+    padding: 10px 18px 6px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .chat-avatar{
+    width:32px;height:32px;border-radius:999px;
+    background:var(--red);display:grid;place-items:center;flex-shrink:0;
+  }
+  .chat-avatar svg{width:15px;height:15px;color:#fff}
+  .chat-name{font-family:var(--sans);font-size:13px;font-weight:700;color:var(--ink)}
+  .chat-status{font-family:var(--mono);font-size:9px;color:var(--positive);letter-spacing:.1em;text-transform:uppercase;margin-top:1px;display:flex;align-items:center;gap:4px}
+  .chat-status::before{content:"";width:5px;height:5px;border-radius:999px;background:var(--positive);animation:pulseDot 1.6s ease-in-out infinite}
+
+  .chat-thread{
+    flex:1;overflow-y:auto;padding:6px 14px 4px;
+    display:flex;flex-direction:column;gap:10px;
+  }
+  .chat-thread::-webkit-scrollbar{display:none}
+
+  .bubble{display:flex;flex-direction:column;max-width:88%}
+  .bubble-bot{align-self:flex-start}
+  .bubble-user{align-self:flex-end}
+  .bubble-label{
+    font-family:var(--mono);font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--mute);margin-bottom:3px;
+  }
+  .bubble-bot .bubble-label{padding-left:2px}
+  .bubble-user .bubble-label{text-align:right;padding-right:2px}
+  .bubble-body{
+    padding: 9px 11px;border-radius:12px;
+    font-family:var(--sans);font-size:11.5px;line-height:1.45;
+  }
+  .bubble-bot .bubble-body{
+    background:var(--bg);border:1px solid var(--rule);
+    color:var(--ink);border-radius:2px 12px 12px 12px;
+  }
+  .bubble-user .bubble-body{
+    background:var(--ink);color:#fff;
+    border-radius:12px 2px 12px 12px;
+    font-weight:500;
+  }
+  .bubble-body b{font-weight:700}
+  .bubble-body .insight-chip{
+    display:inline-flex;align-items:center;gap:4px;
+    margin-top:6px;padding:4px 8px;border-radius:8px;
+    background:var(--red-soft);color:var(--red);
+    font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+    cursor:pointer;
+  }
+
+  .bubble-chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
+  .bubble-chip{
+    padding:5px 10px;border-radius:999px;border:1px solid var(--rule);
+    background:var(--paper);font-family:var(--sans);font-size:10.5px;font-weight:600;
+    color:var(--red);cursor:pointer;transition:background .2s;
+  }
+  .bubble-chip:hover{background:var(--red-tint)}
+
+  .chat-topic-pills{
+    padding: 6px 14px 8px;
+    display:flex;gap:5px;overflow-x:auto;flex-shrink:0;border-top:1px solid var(--rule);
+  }
+  .chat-topic-pills::-webkit-scrollbar{display:none}
+  .ct-pill{
+    flex-shrink:0;padding:5px 10px;border-radius:999px;
+    border:1.5px solid var(--mute-2);background:transparent;
+    font-family:var(--sans);font-size:10px;font-weight:600;
+    color:var(--mute);cursor:pointer;white-space:nowrap;
+    transition:border-color .2s,color .2s;
+  }
+  .ct-pill:hover{border-color:var(--red);color:var(--red)}
+
+  .chat-input-row{
+    padding:8px 14px 10px;border-top:1px solid var(--rule);
+    display:flex;align-items:center;gap:8px;
+  }
+  .chat-input-field{
+    flex:1;padding:7px 12px;border-radius:999px;
+    border:1px solid var(--rule);background:var(--bg);
+    font-family:var(--sans);font-size:11.5px;color:var(--mute);
+    pointer-events:none;
+  }
+  .chat-send{
+    width:28px;height:28px;border-radius:999px;background:var(--red);
+    display:grid;place-items:center;border:none;cursor:pointer;flex-shrink:0;
+  }
+  .chat-send svg{width:13px;height:13px;color:#fff}
+
 </style>
 </head>
 <body>
@@ -857,8 +963,8 @@
         <div class="answer">
           <div class="answer-mark">→</div>
           <div class="answer-text">
-            A app tem os dados. <strong>Falta-lhe explicar.</strong><br>
-            O Financial Pulse é o motor de <em>insights explicáveis</em> que transforma transações em compreensão.
+            A app tem os dados. <strong>Falta-lhe falar — e ouvir.</strong><br>
+            O Financial Pulse é o motor de <em>insights explicáveis</em> que inicia a conversa, antes de o cliente precisar de a pedir.
           </div>
         </div>
       </div>
@@ -891,7 +997,8 @@
           <span class="stack">Saúde</span>
           <span class="stack"><em>financeira</em>,</span>
           <span class="stack">contínua,</span>
-          <span class="stack">explicável.</span>
+          <span class="stack">explicável,</span>
+          <span class="stack" style="color:var(--red);font-style:italic">conversável.</span>
         </h2>
         <p class="left-sub">
           Integrado no Santander Select. <strong>Cada vez que o cliente abre a app, recebe um insight com explicação e ação.</strong> Não é um menu novo. É a app a falar.
@@ -908,6 +1015,10 @@
           <div class="pillar">
             <span class="pillar-name">Age</span>
             <span class="pillar-desc">Recomendação contextual, ligada a um insight real.</span>
+          </div>
+          <div class="pillar" style="border-left:2px solid rgba(236,0,0,0.35);padding-left:12px;margin-left:-14px;">
+            <span class="pillar-name" style="color:rgba(255,255,255,0.7)">Conversa</span>
+            <span class="pillar-desc">O cliente pergunta, o Pulse responde. À semelhança do AIR da Revolut — mas iniciado pelo banco, não pelo cliente.</span>
           </div>
         </div>
       </div>
@@ -968,6 +1079,13 @@
                 </div>
 
                 <!-- INSIGHTS FEED — the actual product -->
+                <div class="pillars-strip">
+                  <button class="p-chip" data-go-view="chat">💬 Pergunta algo</button>
+                  <button class="p-chip" data-go-view="chat">O que mudou?</button>
+                  <button class="p-chip" data-go-view="chat">Próximos pagamentos</button>
+                  <button class="p-chip" data-go-view="chat">Poupar mais</button>
+                  <button class="p-chip" data-go-view="chat">Subscrições</button>
+                </div>
                 <div class="feed-head">
                   <div class="feed-title">3 <b>insights</b> para si</div>
                   <div class="feed-meta">há 2h</div>
@@ -1160,6 +1278,58 @@
                 </div>
               </div>
 
+              <!-- =========== CHAT VIEW =========== -->
+              <div class="view" data-view="chat">
+                <div class="chat-head">
+                  <div class="chat-avatar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-6 4 12 2-6h6"/></svg>
+                  </div>
+                  <div>
+                    <div class="chat-name">Financial Pulse</div>
+                    <div class="chat-status">ativo agora</div>
+                  </div>
+                </div>
+                <div class="chat-thread">
+                  <div class="bubble bubble-bot">
+                    <div class="bubble-label">Financial Pulse &middot; agora</div>
+                    <div class="bubble-body">
+                      Inês, o teu Pulse caiu <b>3 pontos esta semana</b>. A principal causa é um aumento de <b>+&#8364;88 em restauração</b>. Queres perceber melhor?
+                      <div class="bubble-chips">
+                        <button class="bubble-chip">Sim, explica-me</button>
+                        <button class="bubble-chip">Ver timeline</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="bubble bubble-user">
+                    <div class="bubble-label">Tu</div>
+                    <div class="bubble-body">Sim, explica-me</div>
+                  </div>
+                  <div class="bubble bubble-bot">
+                    <div class="bubble-label">Financial Pulse</div>
+                    <div class="bubble-body">
+                      Em 7 dias gastaste <b>&#8364;140 em restauração</b>. A tua média habitual é <b>&#8364;52/mês</b>. Este desvio representa <b>75% da queda</b> no teu Pulse.<br><br>Posso sugerir um teto semanal de <b>&#8364;70</b> até ao fim do mês?
+                      <div class="bubble-chips">
+                        <button class="bubble-chip">Definir teto</button>
+                        <button class="bubble-chip">Ver mais detalhes</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="chat-topic-pills">
+                  <button class="ct-pill">O que mudou?</button>
+                  <button class="ct-pill">Próximos pgtos.</button>
+                  <button class="ct-pill">Poupar mais</button>
+                  <button class="ct-pill">Subscrições</button>
+                  <button class="ct-pill">Planear viagem</button>
+                </div>
+                <div class="chat-input-row">
+                  <div class="chat-input-field">Pergunta qualquer coisa…</div>
+                  <button class="chat-send">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+                  </button>
+                </div>
+              </div>
+
             </div>
 
             <div class="bnav">
@@ -1206,12 +1376,17 @@
           <div class="anno-t">Cada ação ligada a um insight.</div>
           <div class="anno-d">A recomendação não aparece do nada — está sempre <b>amarrada a algo que mudou</b>. Comunicação comercial deixa de ser genérica.</div>
         </div>
+        <div class="anno" data-anno="chat">
+          <div class="anno-k">04 · A conversa</div>
+          <div class="anno-t">O banco fala primeiro. O cliente responde.</div>
+          <div class="anno-d">Ao contrário do AIR da Revolut, o Financial Pulse <b>inicia ele próprio</b> com um insight. A conversa parte da inteligência, não da navegação.</div>
+        </div>
       </div>
     </div>
 
     <div class="s2-foot">
       <p class="footline">
-        Transações <strong>→</strong> padrões <strong>→</strong> <em style="color:#fff;font-style:normal;text-decoration:underline;text-decoration-color:var(--red);text-underline-offset:5px">insights explicáveis</em> <strong>→</strong> ações.
+        Transações <strong>→</strong> padrões <strong>→</strong> <em style="color:#fff;font-style:normal;text-decoration:underline;text-decoration-color:var(--red);text-underline-offset:5px">insights explicáveis</em> <strong>→</strong> ações <strong>→</strong> conversa.
       </p>
       <div class="footindex">02 / 02</div>
     </div>
