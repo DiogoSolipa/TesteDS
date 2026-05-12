@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Financial Pulse — Santander · O Canal de Proximidade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=Manrope:wght@700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --red: #EC0000;
+    --red-deep: #B30000;
+    --red-soft: #FFE0DC;
+    --red-tint: #FFF5F4;
+    --ink: #1A1A1A;
+    --ink-soft: #2A2A2A;
+    --mute: #8A8A8A;
+    --mute-2: #C4C4C4;
+    --paper: #FFFFFF;
+    --bg: #F5F5F5;
+    --rule: #EEEEEE;
+    --rule-soft: #F3F3F3;
+    --positive: #0E8A4F;
+    --amber: #C76A00;
+    --serif: 'Instrument Serif', 'Times New Roman', serif;
+    --sans: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+    --mono: 'JetBrains Mono', 'SF Mono', monospace;
+  }
+
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;overflow:hidden}
+  body{
+    font-family: var(--sans);
+    background: var(--ink);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .deck{position:fixed;inset:0;overflow:hidden}
+  .slide{
+    position:absolute;inset:0;
+    opacity:0;visibility:hidden;
+    transition: opacity .55s cubic-bezier(.22,.61,.36,1), visibility .55s;
+    display:flex;flex-direction:column;
+  }
+  .slide.active{opacity:1;visibility:visible}
+
+  /* NAV CHROME */
+  .chrome{
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+    z-index: 50;
+    display:flex;align-items:center;gap:14px;
+    padding:10px 14px;
+    background: rgba(26,26,26,0.78);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-radius: 999px;
+    border:1px solid rgba(255,255,255,0.08);
+  }
+  .chrome button{
+    width:32px;height:32px;border-radius:999px;
+    background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.18);
+    cursor:pointer;display:grid;place-items:center;
+    transition: background .2s, transform .2s;
+    font-family: var(--sans);font-size:14px;
+  }
+  .chrome button:hover{background:rgba(255,255,255,0.1)}
+  .chrome button:active{transform:scale(.94)}
+  .chrome .dots{display:flex;gap:8px;padding:0 6px}
+  .chrome .dot{
+    width:7px;height:7px;border-radius:999px;
+    background: rgba(255,255,255,0.28);
+    transition: background .25s, width .25s;
+    cursor:pointer;
+  }
+  .chrome .dot.active{background:var(--red);width:22px;border-radius:4px}
+  .chrome .label{
+    font-family: var(--mono);font-size:11px;color:rgba(255,255,255,0.7);
+    letter-spacing:.06em;text-transform:uppercase;padding-left:4px;
+  }
+
+  /* ===== SANTANDER LOGO — real SVG, transparent, works on any bg ===== */
+  .sa-logo{
+    display:block;
+    height:26px;       /* SVG ratio 180:32 → at 26px tall = ~146px wide */
+    width:auto;
+  }
+  .sa-logo-sm{
+    display:block;
+    height:14px;       /* compact for phone app bar */
+    width:auto;
+  }
+
+  /* ===== SLIDE 1 — THE THESIS ===== */
+  .s1{
+    background: var(--paper);
+    background-image:
+      radial-gradient(ellipse at 10% 0%, var(--red-tint) 0%, transparent 40%),
+      radial-gradient(ellipse at 100% 100%, rgba(236,0,0,0.04) 0%, transparent 35%);
+  }
+  .s1::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(26,26,26,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(26,26,26,0.02) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+    -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+  }
+  .s1-top{
+    padding: 32px 56px 0;
+    display:flex;align-items:center;justify-content:space-between;
+    position:relative;z-index:2;
+  }
+  .brand-strip{display:flex;align-items:center;gap:14px}
+  .brand-strip .sep{color:var(--mute-2);font-weight:300;font-size:18px}
+  .brand-strip .product{
+    font-family: var(--sans);font-weight: 500;font-size: 14px;
+    color: var(--ink);letter-spacing:.01em;
+  }
+  .brand-strip .product span{color:var(--mute);font-weight:400;margin-left:8px}
+  .meta{
+    font-family:var(--mono);font-size:11px;color:var(--mute);
+    letter-spacing:.08em;text-transform:uppercase;
+  }
+
+  .s1-body{
+    flex:1;
+    display:grid;grid-template-columns: 1.15fr 1fr;gap: 40px;
+    padding: 26px 56px 70px;
+    position:relative;z-index:2;
+    align-items:center;
+  }
+
+  .kicker{
+    display:inline-flex;align-items:center;gap:10px;
+    font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color: var(--red);
+    margin-bottom: 22px;
+  }
+  .kicker::before{
+    content:"";width:6px;height:6px;border-radius:999px;background:var(--red);
+    box-shadow: 0 0 0 4px rgba(236,0,0,0.18);
+    animation: pulseDot 1.6s ease-in-out infinite;
+  }
+  @keyframes pulseDot{
+    0%,100%{box-shadow:0 0 0 4px rgba(236,0,0,0.18)}
+    50%{box-shadow:0 0 0 8px rgba(236,0,0,0.05)}
+  }
+
+  .h1{
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(48px, 6.4vw, 100px);
+    line-height: 0.96;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+  }
+  .h1 em{
+    font-style: italic;
+    color: var(--red);
+    font-weight: 400;
+  }
+  .h1 .strike{
+    position:relative;display:inline-block;color:var(--mute);
+  }
+  .h1 .strike::after{
+    content:"";position:absolute;left:-4%;right:-4%;top:54%;height:6px;
+    background: var(--ink);
+    transform: skewY(-2deg);
+  }
+
+  .h1-sub{
+    margin-top: 26px;
+    font-family: var(--sans);
+    font-weight: 400;
+    font-size: clamp(15px, 1.15vw, 18px);
+    line-height: 1.55;
+    color: var(--ink-soft);
+    max-width: 540px;
+  }
+  .h1-sub strong{font-weight:600;color:var(--ink)}
+
+  .questions{
+    position:relative;
+    padding: 24px 32px;
+    border-left: 1px solid var(--rule);
+  }
+  .questions-title{
+    font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color: var(--mute);margin-bottom: 22px;
+  }
+  .q{
+    display:flex;align-items:baseline;gap:14px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--rule);
+    opacity:0;transform: translateY(8px);
+    animation: rise .6s cubic-bezier(.22,.61,.36,1) forwards;
+  }
+  .slide.active .q:nth-child(2){animation-delay:.15s}
+  .slide.active .q:nth-child(3){animation-delay:.28s}
+  .slide.active .q:nth-child(4){animation-delay:.41s}
+  .slide.active .q:nth-child(5){animation-delay:.54s}
+  @keyframes rise{to{opacity:1;transform:translateY(0)}}
+
+  .q-num{
+    font-family:var(--mono);font-size:11px;color:var(--red);
+    letter-spacing:.04em;
+    min-width: 20px;
+  }
+  .q-text{
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(20px, 1.5vw, 23px);
+    line-height: 1.25;
+    color: var(--ink);
+    flex:1;
+  }
+  .q-state{
+    font-family: var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+    color: var(--mute);
+    padding: 3px 8px;border:1px solid var(--rule);border-radius: 4px;
+  }
+
+  .answer{
+    margin-top: 24px;
+    padding: 20px 24px;
+    background: var(--ink);
+    color: #fff;
+    border-radius: 14px;
+    display:flex;align-items:flex-start;gap:14px;
+    opacity:0;transform: translateY(8px);
+    animation: rise .7s cubic-bezier(.22,.61,.36,1) .72s forwards;
+    box-shadow: 0 20px 40px -20px rgba(0,0,0,0.4);
+  }
+  .answer-mark{
+    width:28px;height:28px;border-radius:999px;
+    background:var(--red);
+    display:grid;place-items:center;flex-shrink:0;
+    color:#fff;font-family:var(--mono);font-size:13px;font-weight:600;
+    margin-top: 1px;
+  }
+  .answer-text{
+    font-family:var(--sans);font-size:14px;line-height:1.5;font-weight:400;
+  }
+  .answer-text strong{font-weight:600;color:#fff}
+  .answer-text em{
+    color: var(--red-soft);
+    font-style: normal;
+    font-weight: 500;
+  }
+
+  .s1-foot{
+    padding: 0 56px 30px;
+    display:flex;align-items:flex-end;justify-content:space-between;
+    position:relative;z-index:2;
+  }
+  .thesis{
+    font-family: var(--serif);
+    font-size: clamp(22px, 2.1vw, 32px);
+    line-height: 1.15;
+    max-width: 720px;
+    color: var(--ink);
+    font-style: italic;
+  }
+  .thesis strong{font-style:normal;font-weight:400;color:var(--red)}
+  .index{font-family:var(--mono);font-size:11px;color:var(--mute);letter-spacing:.1em}
+
+  /* ===== SLIDE 2 — THE PROOF ===== */
+  .s2{
+    background: var(--ink);
+    color: #fff;
+    background-image:
+      radial-gradient(ellipse at 75% 30%, rgba(236,0,0,0.20) 0%, transparent 45%),
+      radial-gradient(ellipse at 15% 80%, rgba(236,0,0,0.06) 0%, transparent 50%);
+  }
+  .s2::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 80px 80px;
+  }
+  /* s2 header handled by .slide-hd */
+
+  .s2-body{
+    flex:1;display:grid;grid-template-columns: 1fr 360px 1fr;gap: 28px;
+    padding: 14px 56px 70px;
+    position:relative;z-index:2;
+    align-items:center;
+  }
+
+  /* LEFT — narrative */
+  .left-col{padding-right: 8px}
+  .left-col .kicker{color:#fff;opacity:.85}
+  .left-col .kicker::before{background:#fff;box-shadow:0 0 0 4px rgba(255,255,255,.16)}
+  .h2{
+    font-family: var(--serif);
+    font-size: clamp(34px, 4vw, 56px);
+    line-height: 1.0;
+    letter-spacing: -0.022em;
+    color: #fff;
+    font-weight:400;
+  }
+  .h2 em{font-style:italic;color:var(--red);font-weight:400}
+  .h2 .stack{display:block}
+  .left-sub{
+    margin-top: 20px;
+    font-size: 14px;line-height:1.55;color:rgba(255,255,255,0.65);max-width:380px;
+  }
+  .left-sub strong{color:#fff;font-weight:500}
+
+  /* Pillar list — Explica gets visual emphasis */
+  .pillars{
+    margin-top: 26px;
+    display:flex;flex-direction:column;gap:2px;
+  }
+  .pillar{
+    padding: 10px 0;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    display:grid;grid-template-columns: 80px 1fr;align-items:baseline;gap:14px;
+    transition: opacity .3s;
+  }
+  .pillar:last-child{border-bottom: 1px solid rgba(255,255,255,0.1)}
+  .pillar.key{
+    background: linear-gradient(90deg, rgba(236,0,0,0.08), transparent 70%);
+    padding-left: 12px;border-left: 2px solid var(--red);
+    margin-left: -14px;
+  }
+  .pillar-name{
+    font-family:var(--mono);font-size:11px;letter-spacing:.08em;
+    color:rgba(255,255,255,0.5);text-transform:uppercase;
+  }
+  .pillar.key .pillar-name{color:var(--red);font-weight:600}
+  .pillar-desc{
+    font-family:var(--sans);font-size:13px;line-height:1.4;
+    color:rgba(255,255,255,0.85);
+  }
+  .pillar-desc b{color:#fff;font-weight:600}
+
+  /* ===== PHONE — Santander Select replica ===== */
+  .phone-wrap{
+    display:grid;place-items:center;
+    padding: 8px 0;
+    position:relative;
+  }
+  .phone-wrap::before{
+    content:"";position:absolute;width:520px;height:520px;border-radius:50%;
+    background: radial-gradient(circle, rgba(236,0,0,0.22) 0%, transparent 60%);
+    filter: blur(40px);
+    z-index:0;
+  }
+  .phone{
+    width: 320px;height: 670px;
+    background: #0a0a0a;
+    border-radius: 42px;
+    padding: 7px;
+    box-shadow:
+      0 50px 100px -20px rgba(0,0,0,0.8),
+      0 30px 60px -30px rgba(236,0,0,0.5),
+      0 0 0 1px rgba(255,255,255,0.06) inset,
+      0 0 0 2px rgba(0,0,0,0.4);
+    position:relative;z-index:2;
+  }
+  .phone-screen{
+    width:100%;height:100%;border-radius: 35px;
+    background: var(--paper);
+    overflow:hidden;position:relative;color: var(--ink);
+    display:flex;flex-direction:column;
+  }
+  .camera{
+    position:absolute;top:10px;left:50%;transform:translateX(-50%);
+    width:8px;height:8px;background:#000;border-radius:999px;z-index:10;
+  }
+  .status{
+    padding: 14px 22px 6px;
+    display:flex;justify-content:space-between;align-items:center;
+    font-family: var(--sans);font-size:11px;color:var(--ink);font-weight:500;
+  }
+  .status-icons{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--ink)}
+  .status-batt{
+    display:inline-flex;align-items:center;gap:3px;
+    border:1px solid var(--ink);border-radius:3px;
+    padding:1px 3px;font-size:8px;font-weight:600;
+  }
+
+  /* App bar */
+  .app-bar{
+    padding: 8px 18px 4px;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .app-bar-left{display:flex;align-items:center;gap:8px}
+  .app-bar-left .pipe{color:var(--mute-2);font-weight:300;font-size:16px}
+  .app-bar-left .tier{font-family:var(--sans);font-weight:400;font-size:15px;color:var(--ink)}
+  .app-bar-right{display:flex;align-items:center;gap:14px;color:var(--red)}
+  .app-bar-right svg{width:18px;height:18px;display:block}
+
+  /* Greeting */
+  .greet-row{
+    padding: 8px 22px 4px;
+    display:flex;justify-content:space-between;align-items:flex-end;
+  }
+  .greet{font-family:var(--sans);font-weight:400;font-size:18px;color:var(--ink)}
+  .greet b{font-weight:700}
+  .greet-action{
+    display:flex;flex-direction:column;align-items:center;gap:1px;
+    font-family:var(--sans);font-size:10px;color:var(--mute);
+  }
+  .greet-action svg{width:16px;height:16px;color:var(--mute)}
+
+  /* VIEWS container */
+  .views{flex:1;position:relative;overflow:hidden}
+  .view{
+    position:absolute;inset:0;
+    opacity:0;transform: translateX(16px);
+    transition: opacity .4s cubic-bezier(.22,.61,.36,1), transform .4s cubic-bezier(.22,.61,.36,1);
+    display:flex;flex-direction:column;
+    pointer-events:none;overflow-y:auto;
+    padding: 4px 0 4px;
+  }
+  .view.active{opacity:1;transform:translateX(0);pointer-events:auto}
+  .view::-webkit-scrollbar{display:none}
+
+  /* ============ PULSE VIEW — INSIGHT-FIRST ============ */
+
+  /* Compact Pulse bar at top */
+  .pulse-bar{
+    margin: 6px 18px 0;
+    padding: 10px 12px;
+    background: linear-gradient(135deg, var(--ink) 0%, #2a2a2a 100%);
+    border-radius: 14px;
+    display:flex;align-items:center;gap: 10px;
+    color: #fff;
+    position:relative;overflow:hidden;
+  }
+  .pulse-bar::before{
+    content:"";position:absolute;right: -30px;top:-30px;width:120px;height:120px;
+    background: radial-gradient(circle, rgba(236,0,0,0.4) 0%, transparent 70%);
+    pointer-events:none;
+  }
+  .pb-ring{position:relative;width:46px;height:46px;flex-shrink:0;z-index:2}
+  .pb-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+  .pb-ring .ring-bg{stroke: rgba(255,255,255,0.12);fill:none;stroke-width:5}
+  .pb-ring .ring-fg{
+    stroke: var(--red);fill:none;stroke-width:5;
+    stroke-linecap: round;
+    stroke-dasharray: 125.66;
+    stroke-dashoffset: 125.66;
+    animation: drawSmallRing 1.6s cubic-bezier(.22,.61,.36,1) .2s forwards;
+    filter: drop-shadow(0 0 4px rgba(236,0,0,0.6));
+  }
+  @keyframes drawSmallRing{ to { stroke-dashoffset: 32.7; } }
+  .pb-ring-c{
+    position:absolute;inset:0;display:grid;place-items:center;
+    font-family:var(--serif);font-size:18px;color:#fff;
+  }
+  .pb-info{flex:1;z-index:2}
+  .pb-label{
+    font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+    color:rgba(255,255,255,0.6);
+  }
+  .pb-score{
+    font-family:var(--serif);font-size:22px;line-height:1;color:#fff;margin-top:1px;
+  }
+  .pb-score em{font-style:normal;color:rgba(255,255,255,0.5);font-size:13px}
+  .pb-delta{
+    z-index:2;
+    display:inline-flex;align-items:center;gap:4px;
+    padding: 4px 8px;border-radius:999px;
+    background: rgba(14,138,79,0.18);
+    color: #4ade80;
+    font-family:var(--mono);font-size:10px;font-weight:600;
+  }
+
+  /* INSIGHTS SECTION HEADER */
+  .feed-head{
+    padding: 12px 22px 6px;
+    display:flex;align-items:baseline;justify-content:space-between;
+  }
+  .feed-title{
+    font-family:var(--serif);font-size:18px;color:var(--ink);line-height:1;
+  }
+  .feed-title b{color:var(--red);font-weight:400}
+  .feed-meta{
+    font-family:var(--mono);font-size:9px;color:var(--mute);
+    letter-spacing:.1em;text-transform:uppercase;
+  }
+
+  /* HERO INSIGHT — with explainability breakdown */
+  .insight-hero{
+    margin: 4px 18px 0;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 14px;
+    padding: 13px 14px;
+    box-shadow: 0 4px 16px -8px rgba(236,0,0,0.18);
+    position:relative;overflow:hidden;
+  }
+  .insight-hero::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--red);
+  }
+  .ih-top{
+    display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;
+  }
+  .ih-pill{
+    display:inline-flex;align-items:center;gap:5px;
+    font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--red);
+    background: var(--red-soft);
+    padding: 3px 8px;border-radius: 999px;font-weight:600;
+  }
+  .ih-pill::before{
+    content:"";width:5px;height:5px;border-radius:999px;background:var(--red);
+    animation: blink 2s ease-in-out infinite;
+  }
+  @keyframes blink{50%{opacity:.4}}
+  .ih-time{font-family:var(--mono);font-size:9px;color:var(--mute);letter-spacing:.06em}
+
+  .ih-headline{
+    font-family:var(--serif);font-size:17px;line-height:1.2;color:var(--ink);
+    margin-bottom: 8px;
+  }
+  .ih-headline b{font-weight:400;color:var(--red);font-style:italic}
+
+  /* The "why" breakdown — KEY explainability moment */
+  .why{
+    margin-top: 8px;padding: 9px 10px;
+    background: var(--bg);border-radius: 10px;
+  }
+  .why-label{
+    font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--mute);margin-bottom:6px;
+    display:flex;align-items:center;gap:5px;
+  }
+  .why-label svg{width:10px;height:10px;color:var(--red)}
+  .why-row{
+    display:grid;grid-template-columns: 1fr 60px 36px;gap: 6px;align-items:center;
+    margin-bottom: 4px;font-family:var(--sans);font-size:11px;
+  }
+  .why-row:last-child{margin-bottom:0}
+  .why-cat{color:var(--ink);font-weight:500}
+  .why-bar-wrap{
+    height:5px;background:var(--rule);border-radius:999px;overflow:hidden;
+  }
+  .why-bar{
+    height:100%;background:var(--red);border-radius:999px;
+    transform: scaleX(0);transform-origin:left;
+    animation: fillBar 1s cubic-bezier(.22,.61,.36,1) .4s forwards;
+  }
+  .why-row:nth-child(3) .why-bar{animation-delay:.55s}
+  .why-row:nth-child(4) .why-bar{animation-delay:.7s}
+  @keyframes fillBar{to{transform:scaleX(var(--w))}}
+  .why-pct{font-family:var(--mono);font-size:10px;color:var(--mute);text-align:right;font-weight:500}
+
+  .ih-actions{
+    display:flex;gap:6px;margin-top:10px;
+  }
+  .ih-btn{
+    flex:1;padding: 7px 9px;border-radius:9px;
+    font-family:var(--sans);font-size:10.5px;font-weight:500;
+    background:var(--red-tint);border:1px solid var(--red-soft);cursor:pointer;
+    text-align:left;color:var(--red);
+    transition: background .2s, border-color .2s;
+  }
+  .ih-btn:hover{background:var(--red-soft);border-color:var(--red)}
+  .ih-btn b{color:var(--ink);font-weight:600;display:block;font-size:11px;margin-bottom:1px}
+
+  /* SECONDARY INSIGHTS — compact stack */
+  .insights-mini{
+    margin: 8px 18px 0;
+    display:flex;flex-direction:column;gap:6px;
+  }
+  .ins-mini{
+    background:var(--paper);border:1px solid var(--rule);
+    border-radius:11px;padding: 9px 11px;
+    display:flex;align-items:center;gap:10px;
+    cursor:pointer;transition: border-color .2s, transform .15s;
+  }
+  .ins-mini:hover{border-color:var(--red);transform:translateY(-1px)}
+  .ins-mini-icon{
+    width:30px;height:30px;border-radius:8px;background:var(--red-soft);
+    display:grid;place-items:center;color:var(--red);flex-shrink:0;
+  }
+  .ins-mini-icon svg{width:14px;height:14px}
+  .ins-mini-body{flex:1;min-width:0}
+  .ins-mini-k{
+    font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--mute);margin-bottom:2px;
+  }
+  .ins-mini-t{font-family:var(--sans);font-size:11.5px;color:var(--ink);font-weight:500;line-height:1.3}
+  .ins-mini-t b{font-weight:600;color:var(--red)}
+  .ins-mini-arrow{color:var(--mute-2);font-size:18px;font-weight:300}
+
+  /* ===== TIMELINE VIEW ===== */
+  .v-head{padding: 10px 22px 4px}
+  .v-back{
+    display:flex;align-items:center;gap:5px;font-family:var(--sans);font-size:11px;color:var(--red);
+    margin-bottom:4px;cursor:pointer;background:none;border:none;padding:0;
+  }
+  .v-back:hover{text-decoration:underline}
+  .v-title{font-family:var(--serif);font-size:22px;line-height:1.05;color:var(--ink)}
+  .v-sub{font-family:var(--sans);font-size:11px;color:var(--mute);margin-top:2px}
+
+  /* Timeline insight summary at top — emphasizes insight */
+  .tl-summary{
+    margin: 6px 18px 0;padding: 11px 12px;
+    background: var(--red-tint);border: 1px solid var(--red-soft);
+    border-radius: 12px;
+    position:relative;
+  }
+  .tl-summary::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--red);border-radius:3px 0 0 3px;
+  }
+  .tl-sum-k{
+    font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--red);margin-bottom:3px;font-weight:600;
+  }
+  .tl-sum-t{
+    font-family:var(--serif);font-size:14px;line-height:1.35;color:var(--ink);
+  }
+  .tl-sum-t b{color:var(--red);font-weight:400;font-style:italic}
+
+  .tl-chart{
+    height:55px;position:relative;margin: 10px 22px 0;
+  }
+  .tl-line{position:absolute;inset:0;width:100%;height:100%}
+  .tl-baseline{
+    position:absolute;left:0;right:0;bottom:30%;height:1px;
+    background:repeating-linear-gradient(90deg, var(--mute-2), var(--mute-2) 3px, transparent 3px, transparent 6px);
+    opacity:.6;
+  }
+  .tl-baseline-l{
+    position:absolute;right:0;bottom:32%;font-family:var(--mono);font-size:8px;color:var(--mute);
+    background:#fff;padding:0 4px;
+  }
+
+  .tl-events{padding: 6px 18px 4px;display:flex;flex-direction:column;gap:6px}
+  .ev{
+    display:flex;align-items:center;gap:10px;
+    padding: 9px 11px;background:var(--paper);
+    border:1px solid var(--rule);border-radius:10px;
+  }
+  .ev-date{
+    font-family:var(--mono);font-size:9px;color:var(--mute);letter-spacing:.06em;
+    min-width:32px;text-align:center;
+    border-right: 1px solid var(--rule);padding-right:8px;
+  }
+  .ev-date b{display:block;color:var(--ink);font-size:14px;font-weight:600;margin-top:1px;font-family:var(--serif)}
+  .ev-name{flex:1;min-width:0}
+  .ev-name-t{font-family:var(--sans);font-size:12px;color:var(--ink);font-weight:500;line-height:1.2}
+  .ev-cat{font-family:var(--mono);font-size:9px;color:var(--mute);margin-top:2px;text-transform:uppercase;letter-spacing:.04em}
+  .ev-amount{font-family:var(--sans);font-size:13px;font-weight:600}
+  .ev-amount.neg{color:var(--ink)}
+  .ev-amount.pos{color:var(--positive)}
+
+  /* ===== NBA VIEW ===== */
+  .nba-summary{
+    margin: 6px 18px 0;padding: 11px 12px;
+    background: var(--red-tint);border: 1px solid var(--red-soft);
+    border-radius: 12px;
+    position:relative;
+  }
+  .nba-summary::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--red);border-radius:3px 0 0 3px;
+  }
+  .nba-list{padding: 6px 18px 4px;display:flex;flex-direction:column;gap:7px}
+  .nba{
+    padding: 11px 12px;background:var(--paper);border-radius:12px;
+    border:1px solid var(--rule);
+    display:flex;align-items:center;gap:10px;
+    cursor:pointer;transition: border-color .2s, transform .15s, background .2s;
+  }
+  .nba:hover{border-color: var(--red);transform: translateY(-1px);background:var(--red-tint)}
+  .nba-icon{
+    width:34px;height:34px;border-radius:999px;background:var(--red-soft);
+    display:grid;place-items:center;color:var(--red);
+    flex-shrink:0;
+  }
+  .nba-icon svg{width:15px;height:15px}
+  .nba-body{flex:1;min-width:0}
+  .nba-t{font-family:var(--sans);font-size:12px;font-weight:600;color:var(--ink);line-height:1.2}
+  .nba-d{font-family:var(--sans);font-size:10.5px;color:var(--mute);margin-top:2px;line-height:1.35}
+  .nba-cta{font-family:var(--sans);font-size:9px;color:var(--positive);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:.08em}
+  .nba-arrow{color:var(--red);font-family:var(--sans);font-size:20px;font-weight:300}
+
+  /* Bottom nav */
+  .bnav{
+    display:grid;grid-template-columns: repeat(5, 1fr);
+    padding: 8px 4px 14px;
+    background: var(--paper);
+    border-top: 1px solid var(--rule);
+  }
+  .bnav-item{
+    display:flex;flex-direction:column;align-items:center;gap:3px;
+    font-family:var(--sans);font-size:9.5px;color:var(--mute);font-weight:500;
+    cursor:pointer;background:none;border:none;padding:4px 2px;
+  }
+  .bnav-item svg{width:18px;height:18px;color:var(--mute)}
+  .bnav-item.active{color:var(--red)}
+
+  /* RIGHT — annotations */
+  .right-col{padding-left: 12px}
+  .anno{
+    margin-bottom: 16px;
+    position:relative;padding-left: 22px;
+    opacity:.4;transition: opacity .35s;
+    cursor:pointer;
+  }
+  .anno:hover{opacity:.7}
+  .anno.active{opacity:1}
+  .anno::before{
+    content:"";position:absolute;left:0;top:8px;width:11px;height:11px;border-radius:999px;
+    background:transparent;border:1.5px solid rgba(255,255,255,0.4);
+    transition: background .35s, border-color .35s;
+  }
+  .anno.active::before{background:var(--red);border-color:var(--red);box-shadow: 0 0 0 4px rgba(236,0,0,0.22)}
+  .anno-k{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-bottom:5px}
+  .anno-t{font-family:var(--serif);font-size:20px;line-height:1.12;color:#fff;margin-bottom:5px;font-style:italic}
+  .anno-d{font-family:var(--sans);font-size:12.5px;line-height:1.5;color:rgba(255,255,255,0.7)}
+  .anno-d b{color:#fff;font-weight:500}
+
+  .s2-foot{
+    padding: 0 56px 30px;
+    display:flex;align-items:center;justify-content:space-between;
+    position:relative;z-index:2;
+  }
+  .footline{
+    font-family: var(--serif);font-style:italic;
+    font-size: clamp(16px, 1.3vw, 20px);
+    color:rgba(255,255,255,0.75);
+  }
+  .footline strong{font-style:normal;color:var(--red);font-weight:400}
+  .footindex{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:.1em}
+
+  /* HINT */
+  .hint{
+    position:fixed;top:30px;left:50%;transform:translateX(-50%);
+    z-index: 60;
+    padding:8px 14px;border-radius:999px;
+    background:rgba(255,255,255,0.9);
+    backdrop-filter: blur(10px);
+    font-family:var(--mono);font-size:10.5px;color:var(--ink);letter-spacing:.04em;
+    opacity:0;animation: hintIn .5s ease .8s forwards, hintOut .5s ease 6s forwards;
+    pointer-events:none;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  }
+  @keyframes hintIn{to{opacity:1}}
+  @keyframes hintOut{to{opacity:0;transform:translate(-50%, -8px)}}
+  .hint kbd{
+    font-family:var(--mono);font-size:10px;
+    padding: 2px 6px;border-radius:4px;
+    background:rgba(26,26,26,0.08);margin: 0 2px;
+  }
+
+  @media (max-width: 1100px){
+    .s2-body{grid-template-columns: 1fr 340px 1fr;gap:20px;padding-left:32px;padding-right:32px}
+  }
+  @media (max-width: 900px){
+    .s1-body, .s2-body{grid-template-columns: 1fr !important;padding: 16px 24px 80px}
+    .s1-top, .s2-top, .s1-foot, .s2-foot{padding-left:24px;padding-right:24px}
+    .questions{border-left:none;padding-left:0}
+    .phone{transform: scale(.85)}
+  }
+
+  /* ===== PILLAR CHIPS (home screen, AIR-style) ===== */
+  .pillars-strip{
+    padding: 6px 14px 8px;
+    display:flex;gap:6px;overflow-x:auto;flex-shrink:0;
+  }
+  .pillars-strip::-webkit-scrollbar{display:none}
+  .p-chip{
+    flex-shrink:0;
+    padding: 5px 10px;
+    border-radius:999px;border:1px solid var(--rule);
+    background:var(--paper);font-family:var(--sans);font-size:10px;
+    font-weight:600;color:var(--ink);cursor:pointer;white-space:nowrap;
+    transition: border-color .2s, background .2s;
+  }
+  .p-chip:hover{border-color:var(--red);background:var(--red-tint);color:var(--red)}
+
+  /* ===== CHAT VIEW ===== */
+  .chat-head{
+    padding: 10px 18px 6px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .chat-avatar{
+    width:32px;height:32px;border-radius:999px;
+    background:var(--red);display:grid;place-items:center;flex-shrink:0;
+  }
+  .chat-avatar svg{width:15px;height:15px;color:#fff}
+  .chat-name{font-family:var(--sans);font-size:13px;font-weight:700;color:var(--ink)}
+  .chat-status{font-family:var(--mono);font-size:9px;color:var(--positive);letter-spacing:.1em;text-transform:uppercase;margin-top:1px;display:flex;align-items:center;gap:4px}
+  .chat-status::before{content:"";width:5px;height:5px;border-radius:999px;background:var(--positive);animation:pulseDot 1.6s ease-in-out infinite}
+
+  .chat-thread{
+    flex:1;overflow-y:auto;padding:6px 14px 4px;
+    display:flex;flex-direction:column;gap:10px;
+  }
+  .chat-thread::-webkit-scrollbar{display:none}
+
+  .bubble{display:flex;flex-direction:column;max-width:88%}
+  .bubble-bot{align-self:flex-start}
+  .bubble-user{align-self:flex-end}
+  .bubble-label{
+    font-family:var(--mono);font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--mute);margin-bottom:3px;
+  }
+  .bubble-bot .bubble-label{padding-left:2px}
+  .bubble-user .bubble-label{text-align:right;padding-right:2px}
+  .bubble-body{
+    padding: 9px 11px;border-radius:12px;
+    font-family:var(--sans);font-size:11.5px;line-height:1.45;
+  }
+  .bubble-bot .bubble-body{
+    background:var(--bg);border:1px solid var(--rule);
+    color:var(--ink);border-radius:2px 12px 12px 12px;
+  }
+  .bubble-user .bubble-body{
+    background:var(--ink);color:#fff;
+    border-radius:12px 2px 12px 12px;
+    font-weight:500;
+  }
+  .bubble-body b{font-weight:700}
+  .bubble-body .insight-chip{
+    display:inline-flex;align-items:center;gap:4px;
+    margin-top:6px;padding:4px 8px;border-radius:8px;
+    background:var(--red-soft);color:var(--red);
+    font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+    cursor:pointer;
+  }
+
+  .bubble-chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
+  .bubble-chip{
+    padding:5px 10px;border-radius:999px;border:1px solid var(--rule);
+    background:var(--paper);font-family:var(--sans);font-size:10.5px;font-weight:600;
+    color:var(--red);cursor:pointer;transition:background .2s;
+  }
+  .bubble-chip:hover{background:var(--red-tint)}
+
+  .chat-topic-pills{
+    padding: 6px 14px 8px;
+    display:flex;gap:5px;overflow-x:auto;flex-shrink:0;border-top:1px solid var(--rule);
+  }
+  .chat-topic-pills::-webkit-scrollbar{display:none}
+  .ct-pill{
+    flex-shrink:0;padding:5px 10px;border-radius:999px;
+    border:1.5px solid var(--mute-2);background:transparent;
+    font-family:var(--sans);font-size:10px;font-weight:600;
+    color:var(--mute);cursor:pointer;white-space:nowrap;
+    transition:border-color .2s,color .2s;
+  }
+  .ct-pill:hover{border-color:var(--red);color:var(--red)}
+
+  .chat-input-row{
+    padding:8px 14px 10px;border-top:1px solid var(--rule);
+    display:flex;align-items:center;gap:8px;
+  }
+  .chat-input-field{
+    flex:1;padding:7px 12px;border-radius:999px;
+    border:1px solid var(--rule);background:var(--bg);
+    font-family:var(--sans);font-size:11.5px;color:var(--mute);
+    pointer-events:none;
+  }
+  .chat-send{
+    width:28px;height:28px;border-radius:999px;background:var(--red);
+    display:grid;place-items:center;border:none;cursor:pointer;flex-shrink:0;
+  }
+  .chat-send svg{width:13px;height:13px;color:#fff}
+
+</style>
+</head>
+<body>
+
+<div class="hint">Use <kbd>←</kbd> <kbd>→</kbd> · Toca em <kbd>01</kbd> <kbd>02</kbd> <kbd>03</kbd> à direita para navegar a app</div>
+
+<!-- ================ SHARED SVG SYMBOLS ================ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- Santander flame — refined approximation -->
+    <symbol id="flame" viewBox="0 0 32 32">
+      <!-- The Santander mark: stylized interlocking flame -->
+      <path fill="#EC0000" d="M21.5 4.2
+        C 18.4 6.4, 17.2 9.2, 18.6 12.4
+        C 14.8 13.4, 11.2 11.6, 11.4 7.6
+        C 8.4 9.8, 6.4 13.6, 7.6 17.8
+        C 8.8 22, 12.8 24.4, 16.8 23.8
+        C 13.6 22.4, 12.4 19.6, 14 16.8
+        C 17.4 17.6, 19.8 20.4, 18.8 23.8
+        C 22.4 22.2, 24.6 18.6, 24 14.2
+        C 23.4 9.6, 22.8 6.6, 21.5 4.2 Z"/>
+    </symbol>
+    <symbol id="env" viewBox="0 0 24 24"><path d="M3 6h18v12H3z M3 6l9 7 9-7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+    <symbol id="search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M20 20l-4.6-4.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="eye" viewBox="0 0 24 24"><path d="M12 5c-5 0-9 4.5-10 7 1 2.5 5 7 10 7s9-4.5 10-7c-1-2.5-5-7-10-7z" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+    <symbol id="info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v.5M12 11v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="back" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3 9h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></symbol>
+    <symbol id="coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M14 9c-.6-.6-1.4-1-2.5-1-1.4 0-2.5.9-2.5 2s1.1 1.7 2.5 2 2.5.9 2.5 2-1.1 2-2.5 2c-1.1 0-1.9-.4-2.5-1M12 6v2M12 16v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="action" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="why" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 9.5c0-1.2 1-2 2-2s2 .8 2 2c0 1.5-2 1.5-2 3M12 16v.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <!-- bottom nav -->
+    <symbol id="arrows" viewBox="0 0 24 24"><path d="M4 9h13l-3-3M20 15H7l3 3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="euro" viewBox="0 0 24 24"><path d="M17 6.5c-1.3-1-3-1.5-4.5-1.5C8 5 5 8.5 5 12s3 7 7.5 7c1.5 0 3.2-.5 4.5-1.5M3 10h10M3 14h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="gift" viewBox="0 0 24 24"><rect x="3" y="9" width="18" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3 13h18M12 9v11M12 9c-2 0-4-1-4-3s2-3 4 0c2-3 4-2 4 0s-2 3-4 3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+    <symbol id="user" viewBox="0 0 24 24"><circle cx="12" cy="9" r="3.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5 20c.5-3.5 3.5-6 7-6s6.5 2.5 7 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+  </defs>
+</svg>
+
+<div class="deck">
+
+  <!-- ========== SLIDE 1 ========== -->
+  <section class="slide s1 active" data-slide="1">
+    <div class="slide-hd">
+      <div class="brand-strip">
+        <img class="sa-logo" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHZlcnNpb249IjEuMSIgd2lkdGg9IjE4MHB4IiBoZWlnaHQ9IjMycHgiIHZpZXdCb3g9IjAgMCAxODAuMCAzMi4wIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj48ZGVmcz48Y2xpcFBhdGggaWQ9ImkwIj48cGF0aCBkPSJNMTkyMCwwIEwxOTIwLDYyNDIgTDAsNjI0MiBMMCwwIEwxOTIwLDAgWiI+PC9wYXRoPjwvY2xpcFBhdGg+PGNsaXBQYXRoIGlkPSJpMSI+PHBhdGggZD0iTTE2Ljc5MDQwNjUsMCBDMTYuOTQyMjU0LDAuNzY0MzUyMjUgMTcuMjE1NzEyLDEuNTA5NjY4NDggMTcuNjExNDQyNSwyLjIwNTI2NzEgTDIyLjgwMTE4NDUsMTEuMzI2MjA4OCBDMjMuMzg5NTkzNiwxMi4zNjAyMDA3IDIzLjcwNzYzNDcsMTMuNTA0MTUzNiAyMy43NTY4NTI3LDE0LjY1NzI4ODYgQzI5LjMxMjk3MDksMTYuMTMwMDA0OCAzMy4xNDcxMjA3LDE5LjI1ODE4MyAzMy4xNDcxMjA3LDIyLjg3OTI4MjIgQzMzLjE0NzEyMDcsMjcuOTE2NDM3NSAyNS43MjY4OTc2LDMyIDE2LjU3MzY3MDcsMzIgQzcuNDIwMjIzMDQsMzIgMCwyNy45MTY0Mzc1IDAsMjIuODc5MjgyMiBDMCwxOS4yNTg0MDcgMy44MzQ1OTExNywxNi4xMzExMjQ2IDkuMzkwMjY3OTgsMTQuNjU4MTg0NCBDOS4zMzIwMDA5MSwxNi4wMjI1MDczIDkuNjUwMDQyLDE3LjM5OTU5NTUgMTAuMzQ2MTU2OSwxOC42MjI4Mjc4IEwxNS41MzU2NzgyLDI3Ljc0Mzk5MzUgQzE1LjkzMTQwODcsMjguNDM5MzY4MiAxNi4yMDQ4NjY2LDI5LjE4NDY4NDQgMTYuMzU2NzE0MSwyOS45NDkwMzY3IEwxNi41NzM2NzA3LDI5LjU2Nzg2ODMgQzE3Ljg1ODE5NDcsMjcuMzEwMTk2MiAxNy44NTgxOTQ3LDI0LjUyODY5NzUgMTYuNTczNjcwNywyMi4yNzEyNDkzIEwxMi40MDkzNDA5LDE0Ljk1MTU2MzEgQzExLjEzNzgzODYsMTIuNjk3OTIyMSAxMS4xNDE4MTE0LDkuOTI3ODQ1MDggMTIuNDIxOTIxMyw3LjY3Nzc4NzM0IEwxMi42Mzg2NTcxLDcuMjk2NjE5MDEgQzEyLjc5MDcyNTMsOC4wNjA5NzEyNiAxMy4wNjM5NjI2LDguODA2Mjg3NDkgMTMuNDU5NjkzMSw5LjUwMTg4NjExIEwxOS42ODc0Mjc2LDIwLjQ0NzE1MDUgQzIwLjA4MzE1ODEsMjEuMTQyNzQ5MiAyMC4zNTY2MTYsMjEuODg4MDY1NCAyMC41MDg0NjM2LDIyLjY1MjQxNzYgTDIwLjcyNTQyMDEsMjIuMjcxMjQ5MyBDMjIuMDA5NzIzNCwyMC4wMTM1NzcyIDIyLjAwOTcyMzQsMTcuMjMyMDc4NSAyMC43MjU0MjAxLDE0Ljk3NDYzMDMgTDE2LjU3MzQ1LDcuNjc3NTYzMzkgQzE1LjI4OTE0NjcsNS40MTk4OTEyNCAxNS4yODkxNDY3LDIuNjM4ODQwNDggMTYuNTczNjcwNywwLjM4MTE2ODMzNiBaIE00Ny4wOTQxMzgzLDguNTYwODM0NzkgQzQ5LjExNzU5NDgsOC41NjA4MzQ3OSA1MS4wMTY1NzE1LDguODQ1MjU1MzQgNTIuNzkxMDY4Nyw5LjQ3NzAyNzMgQzUyLjY5NzcwODksMTAuNzQwNTcxMiA1Mi40Nzk4Njk1LDExLjcxOTkxODUgNTIuMTY4NDQ5NywxMi42MzU4ODcxIEM1MC40ODczMTIzLDEyLjAwNDExNTEgNDguNDk0OTc1OCwxMS43MTk5MTg1IDQ3LjA2Mjc5NzcsMTEuNzE5OTE4NSBDNDQuMzU0NDgyNSwxMS43MTk5MTg1IDQzLjEwOTI0NDYsMTIuNzkzOTk4MSA0My4xMDkyNDQ2LDE0LjQ2ODA0ODIgQzQzLjEwOTI0NDYsMTYuMTEwNzQ0OSA0NC4zMjMzNjI2LDE3LjA1ODI5MDggNDYuNTAyNDE4NiwxOC4wMDYyODQ3IEw0OC4xODM3NzY3LDE4LjczMjU2NDkgQzUyLjEzNzMyOTgsMjAuNDM4NDE2NCA1My43ODcxMjY2LDIyLjIzOSA1My43ODcxMjY2LDI1LjMwMzEyNzYgQzUzLjc4NzEyNjYsMjguOTM1ODcyNCA1MS4wNzg4MTE0LDMxLjQzMTM4MjggNDUuNzg2NDM5OSwzMS40MzEzODI4IEM0My4yMzM3MjQzLDMxLjQzMTM4MjggNDEuMTQ4MDI4LDMxLjA1MjQ1NCAzOS40MDQ2NTA4LDMwLjIzMDk5MzcgQzM5LjQ2Njg5MDYsMjguOTM1ODcyNCAzOS42NTM2MTAxLDI4LjA1MTQ4MTIgMzkuOTk1OTI5MiwyNy4wNDA1NTY1IEM0MS43MzkzMDY0LDI3Ljg2MjAxNjggNDMuOTgwODIyOSwyOC4yNzIyOTkxIDQ1LjY5MzA4MDIsMjguMjcyMjk5MSBDNDguNTg4MzM1NiwyOC4yNzIyOTkxIDUwLjIwNzIzMzEsMjcuMzI0NzUzMSA1MC4yMDcyMzMxLDI1LjQ2MTAxNDYgQzUwLjIwNzIzMzEsMjMuNjI4ODUzNiA0OS4wMjQyMzUsMjIuNzc1ODE1OSA0Ni4wOTc4NTk3LDIxLjQ4MDkxODUgTDQ0LjUxMDA4MjEsMjAuNzg1OTkxNyBDNDEuNTgzNzA2OCwxOS40OTA2NDY1IDM5LjU5MTM3MDMsMTcuODE2MzcyNCAzOS41OTEzNzAzLDE0LjQ2ODA0ODIgQzM5LjU5MTM3MDMsMTAuODY3MTA0OCA0Mi4wNTA5NDY5LDguNTYwODM0NzkgNDcuMDk0MTM4Myw4LjU2MDgzNDc5IFogTTE2MS4xOTU4NDgsMTQuMjQ3MDA2NCBDMTY2LjA4MzQ0LDE0LjI0NzAwNjQgMTY4LjIwMDQ3NywxNy41MDAzNzQ0IDE2OC4yMDA0NzcsMjEuNDgwOTE4NSBDMTY4LjIwMDQ3NywyMi40NjAyNjU4IDE2OC4xMzgyMzcsMjMuMjQ5OTI0OCAxNjguMDEzNTM3LDI0LjE2NTg5MzMgTDE1Ny4wODY0NzUsMjQuMTY1ODkzMyBDMTU3LjUyMjM3NCwyNi45Nzc0MDE3IDE1OS4xNDEwNTEsMjguMzM1Njc3OCAxNjIuMTkxOTA2LDI4LjMzNTY3NzggQzE2NC4wNTk5ODQsMjguMzM1Njc3OCAxNjUuOTU5MTgxLDI3LjkyNDk0NzcgMTY3LjY3MTIxOCwyNy4xMzUyODg3IEMxNjcuNTQ2NzM4LDI4LjA1MTQ4MTIgMTY3LjM2MDAxOSwyOS4yNTE2NDY0IDE2Ny4xNDE5NTksMzAuMjkzOTI0NiBDMTY1LjU4NTMwMSwzMS4wMjA2NTI3IDE2My45MzU1MDQsMzEuMzA0ODQ5MyAxNjIuMDk4NTQ2LDMxLjMwNDg0OTMgQzE1Ni4zNzA0OTYsMzEuMzA0ODQ5MyAxNTMuNTk5OTQxLDI4LjA4MjgzNDcgMTUzLjU5OTk0MSwyMi42ODEzMDc2IEMxNTMuNTk5OTQxLDE3Ljk3NDQ4MzMgMTU1Ljc0ODA5OCwxNC4yNDcwMDY0IDE2MS4xOTU4NDgsMTQuMjQ3MDA2NCBaIE0xNTAuNzk3MTYzLDguODEzNDUzOTkgTDE1MC43OTcxNjMsMzAuOTI2MTQ0NCBMMTQ3LjY1Mjk0OCwzMC45MjYxNDQ0IEwxNDcuNDY2NDQ5LDI4LjkwNDI5NSBDMTQ2LjU5NDQzLDMwLjM4OTEwNDcgMTQ1LjI1NTgzMiwzMS4zMDQ4NDkzIDE0My4wMTQ1MzYsMzEuMzA0ODQ5MyBDMTM4LjkwNTM4MywzMS4zMDQ4NDkzIDEzNi4xNjU1MDcsMjguMjcyMjk5MSAxMzYuMTY1NTA3LDIyLjk2NTcyODIgQzEzNi4xNjU1MDcsMTcuNDA1NjQyMiAxMzkuMDkxODgyLDE0LjI0NzAwNjQgMTQ0Ljg1MTI3MywxNC4yNDcwMDY0IEMxNDUuNzUzOTcxLDE0LjI0NzAwNjQgMTQ2LjU5NDQzLDE0LjM0MTczODYgMTQ3LjQwMzk4OSwxNC40OTk2MjU2IEwxNDcuNDAzOTg5LDkuMjg3MzM4OTUgQzE0OC40NjI1MDcsOC45MDg0MTAxNCAxNDkuNjc2NDA0LDguODEzNDUzOTkgMTUwLjc5NzE2Myw4LjgxMzQ1Mzk5IFogTTExMC4wMTM3NDUsMTQuMjQ3MDA2NCBDMTEyLjI1NTA0MSwxNC4yNDcwMDY0IDExNC4wOTE5OTksMTQuNDk5NjI1NiAxMTUuODk3Mzk1LDE1LjEzMTM5NzUgTDExNS44OTczOTUsMzAuOTI2MTQ0NCBMMTEyLjc1MzE4LDMwLjkyNjE0NDQgTDExMi41NjY2ODIsMjkuMDMwODI4NiBDMTExLjY5NDY2MiwzMC40MjA2ODIxIDExMC4zNTYwNjQsMzEuMzA0ODQ5MyAxMDguMTc3MDA4LDMxLjMwNDg0OTMgQzEwNC4wNjc2MzUsMzEuMzA0ODQ5MyAxMDEuMzI4MiwyOC4yNzIyOTkxIDEwMS4zMjgyLDIyLjk2NTcyODIgQzEwMS4zMjgyLDE3LjQwNTY0MjIgMTA0LjI1NDM1NCwxNC4yNDcwMDY0IDExMC4wMTM3NDUsMTQuMjQ3MDA2NCBaIE05NC44ODMyODgxLDguODEzNDUzOTkgTDk0Ljg4MzI4ODEsMTQuNzgzODIyMiBMMTAwLjI5OTkxOCwxNC43ODM4MjIyIEMxMDAuMjM3Njc5LDE1Ljg1NzkwMTcgMTAwLjE0NDMxOSwxNi44MzcyNDkgOTkuOTg4NDk4NiwxNy43NTMyMTc2IEw5NC44ODMyODgxLDE3Ljc1MzIxNzYgTDk0Ljg4MzI4ODEsMjUuNDkyODE2IEM5NC44ODMyODgxLDI3LjU0NjAxODkgOTUuODc5MzQ2LDI4LjMzNTY3NzggOTcuNTI5MTQyNywyOC4zMzU2Nzc4IEM5OC41MjUyMDA2LDI4LjMzNTY3NzggOTkuNDU5NDYwMSwyOC4xNDU5ODk1IDEwMC4yMDY1NTksMjcuODYyMDE2OCBDMTAwLjExMzE5OSwyOC44MDkzMzg4IDk5Ljk4ODQ5ODYsMjkuODgzNjQyMyA5OS44MDE3NzkyLDMwLjc5OTM4NjkgQzk4Ljg2Nzc0MDQsMzEuMTc4NTM5NyA5Ny44NzE2ODI1LDMxLjMwNDg0OTMgOTYuOTA2NTIzOCwzMS4zMDQ4NDkzIEM5My41NzU1ODk2LDMxLjMwNDg0OTMgOTEuNDU4NTUyOCwyOS43NTcxMDg4IDkxLjQ1ODU1MjgsMjUuOTAzMzIyMiBMOTEuNDU4NTUyOCw5LjMxODkxNjM1IEM5Mi41MTcwNzEyLDguOTcxNTY0OTQgOTMuODI0NTQ4OSw4LjgxMzQ1Mzk5IDk0Ljg4MzI4ODEsOC44MTM0NTM5OSBaIE02NC42MjE3MTE2LDE0LjI0NzAwNjQgQzY2Ljg2MzIyODEsMTQuMjQ3MDA2NCA2OC42OTk5NjUxLDE0LjQ5OTYyNTYgNzAuNTA1NTgyMSwxNS4xMzEzOTc1IEw3MC41MDU1ODIxLDMwLjkyNjE0NDQgTDY3LjM2MTM2NzQsMzAuOTI2MTQ0NCBMNjcuMTc0NjQ3OSwyOS4wMzA4Mjg2IEM2Ni4zMDI4NDksMzAuNDIwNjgyMSA2NC45NjQwMzA2LDMxLjMwNDg0OTMgNjIuNzg0OTc0NiwzMS4zMDQ4NDkzIEM1OC42NzU2MDEzLDMxLjMwNDg0OTMgNTUuOTM2MTY2MiwyOC4yNzIyOTkxIDU1LjkzNjE2NjIsMjIuOTY1NzI4MiBDNTUuOTM2MTY2MiwxNy40MDU2NDIyIDU4Ljg2MjMyMDgsMTQuMjQ3MDA2NCA2NC42MjE3MTE2LDE0LjI0NzAwNjQgWiBNMTgwLDE0LjM3MzA5MiBDMTgwLDE1LjQxNTgxODEgMTc5Ljg3NTUyLDE2LjY3OTM2MiAxNzkuNjg4ODAxLDE3LjM0MjcxMTQgQzE3OC44Nzk0NjIsMTcuMjQ3NzU1MiAxNzguMDY5OTAzLDE3LjIxNjE3NzggMTc3LjEwNDc0NSwxNy4yMTYxNzc4IEMxNzYuMjY0Mjg2LDE3LjIxNjE3NzggMTc1LjQyMzYwNywxNy4yNzk1NTY2IDE3NC41ODMxNDksMTcuNDA1NjQyMiBMMTc0LjU4MzE0OSwzMC45MjYxNDQ0IEwxNzEuMTU4NjM0LDMwLjkyNjE0NDQgTDE3MS4xNTg2MzQsMTUuMTMxMzk3NSBDMTcyLjYyMTkzMiwxNC42MjU5MzUyIDE3NS4wODEyODgsMTQuMjQ3MDA2NCAxNzcuMDExMzg1LDE0LjI0NzAwNjQgQzE3OC4wNjk5MDMsMTQuMjQ3MDA2NCAxNzkuMjUyOTAxLDE0LjI3ODU4MzggMTgwLDE0LjM3MzA5MiBaIE0xMjUuODYwMTgxLDE0LjI0NzAwNjQgQzEzMS41ODg0NTIsMTQuMjQ3MDA2NCAxMzMuNDI0OTY4LDE2LjQ4OTY3MzcgMTMzLjQyNDk2OCwyMC4zMTIxMDY4IEwxMzMuNDI0OTY4LDMwLjkyNjE0NDQgTDEzMC4wMDA4OTUsMzAuOTI2MTQ0NCBMMTMwLjAwMDg5NSwyMC45MTIzMDEzIEMxMzAuMDAwODk1LDE4LjQxNjc5MDkgMTI5LjE5MTMzNiwxNy4yMTYxNzc4IDEyNS43NjY4MjEsMTcuMjE2MTc3OCBDMTI0Ljk1NzQ4MywxNy4yMTYxNzc4IDEyMy45OTIzMjQsMTcuMzExMTM0IDEyMy4wNTg1MDYsMTcuNDY5MDIxIEwxMjMuMDU4NTA2LDMwLjkyNjE0NDQgTDExOS42MzM5OTIsMzAuOTI2MTQ0NCBMMTE5LjYzMzk5MiwxNS4xMzEzOTc1IEMxMjEuODEzMDQ4LDE0LjU5NDM1NzggMTI0LjIxMDE2NCwxNC4yNDcwMDY0IDEyNS44NjAxODEsMTQuMjQ3MDA2NCBaIE04MC40NjgzNjgyLDE0LjI0NzAwNjQgQzg2LjE5NjYzOTEsMTQuMjQ3MDA2NCA4OC4wMzMxNTUzLDE2LjQ4OTY3MzcgODguMDMzMTU1MywyMC4zMTIxMDY4IEw4OC4wMzMxNTUzLDMwLjkyNjE0NDQgTDg0LjYwODg2MTUsMzAuOTI2MTQ0NCBMODQuNjA4ODYxNSwyMC45MTIzMDEzIEM4NC42MDg4NjE1LDE4LjQxNjc5MDkgODMuNzk5MzAyMywxNy4yMTYxNzc4IDgwLjM3NTAwODQsMTcuMjE2MTc3OCBDNzkuNTY1NDQ5MywxNy4yMTYxNzc4IDc4LjYwMDUxMTMsMTcuMzExMTM0IDc3LjY2NjQ3MjUsMTcuNDY5MDIxIEw3Ny42NjY0NzI1LDMwLjkyNjE0NDQgTDc0LjI0MjE3ODYsMzAuOTI2MTQ0NCBMNzQuMjQyMTc4NiwxNS4xMzEzOTc1IEM3Ni40MjEyMzQ2LDE0LjU5NDM1NzggNzguODE4MzUwNywxNC4yNDcwMDY0IDgwLjQ2ODM2ODIsMTQuMjQ3MDA2NCBaIE0xNDQuNjY0MzMzLDE3LjIxNjE3NzggQzE0MS4yNzA5MzgsMTcuMjE2MTc3OCAxMzkuNjUyMjYxLDE5LjM2NDU2MDggMTM5LjY1MjI2MSwyMi45NjU3MjgyIEMxMzkuNjUyMjYxLDI2LjE4NzUxODggMTQwLjkyODg0LDI4LjQ2MjIxMTQgMTQzLjk3OTY5NSwyOC40NjIyMTE0IEMxNDUuMzQ5NDEyLDI4LjQ2MjIxMTQgMTQ2LjQ3MDE3MSwyNy45ODgxMDI1IDE0Ny40MDM5ODksMjcuMjYxMzc0NCBMMTQ3LjQwMzk4OSwxNy41MzIxNzU4IEMxNDYuNTAxMjkxLDE3LjM0MjcxMTQgMTQ1LjU2NzI1MiwxNy4yMTYxNzc4IDE0NC42NjQzMzMsMTcuMjE2MTc3OCBaIE0xMTAuMDEzNzQ1LDE3LjIxNjE3NzggQzEwNi40NjQ1MywxNy4yMTYxNzc4IDEwNC44MTQ3MzQsMTkuNDI3NzE1NiAxMDQuODE0NzM0LDIyLjk2NTcyODIgQzEwNC44MTQ3MzQsMjYuMTg3NTE4OCAxMDYuMDkxMzEyLDI4LjQ2MjIxMTQgMTA5LjE0MTk0NiwyOC40NjIyMTE0IEMxMTAuNDgwMzIzLDI4LjQ2MjIxMTQgMTExLjU3MDQwMywyOC4wMTk5MDM4IDExMi40NzI4OCwyNy4zMjQ3NTMxIEwxMTIuNDcyODgsMTcuNDA1NjQyMiBDMTExLjc1NzEyMiwxNy4yNzk1NTY2IDExMC45Nzg0NjMsMTcuMjE2MTc3OCAxMTAuMDEzNzQ1LDE3LjIxNjE3NzggWiBNNjQuNjIxNzExNiwxNy4yMTYxNzc4IEM2MS4wNzI3MTc0LDE3LjIxNjE3NzggNTkuNDIyOTIwNiwxOS40Mjc3MTU2IDU5LjQyMjkyMDYsMjIuOTY1NzI4MiBDNTkuNDIyOTIwNiwyNi4xODc1MTg4IDYwLjY5OTI3ODQsMjguNDYyMjExNCA2My43NTAxMzMzLDI4LjQ2MjIxMTQgQzY1LjA4ODczMSwyOC40NjIyMTE0IDY2LjE3ODM2OTMsMjguMDE5OTAzOCA2Ny4wODEwNjc1LDI3LjMyNDc1MzEgTDY3LjA4MTA2NzUsMTcuNDA1NjQyMiBDNjYuMzY1MDg4OCwxNy4yNzk1NTY2IDY1LjU4Njg3MDMsMTcuMjE2MTc3OCA2NC42MjE3MTE2LDE3LjIxNjE3NzggWiBNMTYxLjAwOTEyOSwxNy4xNTMwMjMgQzE1OC41ODA4OTMsMTcuMTUzMDIzIDE1Ny4zMDQ1MzUsMTguNTc0Njc3OSAxNTcuMDI0MjM1LDIxLjI1OTY1MjcgTDE2NC43NDUwNjMsMjEuMjU5NjUyNyBDMTY0Ljc0NTA2MywxOC42Njk0MTAxIDE2My4zNzUzNDYsMTcuMTUzMDIzIDE2MS4wMDkxMjksMTcuMTUzMDIzIFoiPjwvcGF0aD48L2NsaXBQYXRoPjwvZGVmcz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMjMyLjAgLTEyMS4wKSI+PGcgY2xpcC1wYXRoPSJ1cmwoI2kwKSI+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjMyLjAgMTIxLjApIj48ZyBjbGlwLXBhdGg9InVybCgjaTEpIj48cG9seWdvbiBwb2ludHM9IjAsMCAxODAsMCAxODAsMzIgMCwzMiAwLDAiIHN0cm9rZT0ibm9uZSIgZmlsbD0iI0VDMDAwMCI+PC9wb2x5Z29uPjwvZz48L2c+PC9nPjwvZz48L3N2Zz4=" alt="Santander" />
+        <span class="sep">|</span>
+        <span class="product">Financial Pulse <span>· Pitch</span></span>
+      </div>
+      <div class="hd-meta">Comissão Executiva</div>
+    </div>
+
+    <div class="s1-body">
+      <div>
+        <div class="kicker">A tese</div>
+        <h1 class="h1">
+          A app deixa de ser <span class="strike">um canal</span><br>
+          e passa a ser <em>o canal</em> de proximidade<br>
+          com o cliente.
+        </h1>
+        <p class="h1-sub">
+          Hoje a app é transacional: consulta, transfere, paga. O cliente tem dados em todo o lado e respostas em lado nenhum. O <strong>Financial Pulse</strong> é a camada contínua de inteligência que transforma esses dados numa relação — através de <strong>insights explicáveis</strong> que dizem o que mudou, porquê mudou, e o que fazer a seguir.
+        </p>
+      </div>
+
+      <div class="questions">
+        <div class="questions-title">Quatro perguntas simples que o cliente não consegue responder</div>
+
+        <div class="q">
+          <span class="q-num">01</span>
+          <span class="q-text">Onde está o meu dinheiro?</span>
+          <span class="q-state">fragmentado</span>
+        </div>
+        <div class="q">
+          <span class="q-num">02</span>
+          <span class="q-text">Onde estou a gastar?</span>
+          <span class="q-state">opaco</span>
+        </div>
+        <div class="q">
+          <span class="q-num">03</span>
+          <span class="q-text">O que vem a seguir?</span>
+          <span class="q-state">disperso</span>
+        </div>
+        <div class="q">
+          <span class="q-num">04</span>
+          <span class="q-text">O que devo fazer?</span>
+          <span class="q-state">silêncio</span>
+        </div>
+
+        <div class="answer">
+          <div class="answer-mark">→</div>
+          <div class="answer-text">
+            A app tem os dados. <strong>Falta-lhe falar — e ouvir.</strong><br>
+            O Financial Pulse é o motor de <em>insights explicáveis</em> que inicia a conversa, antes de o cliente precisar de a pedir.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="s1-foot">
+      <p class="thesis">
+        Não é uma feature. É a passagem do banco <strong>de canal transacional</strong> para <strong>canal relacional</strong>.
+      </p>
+      <div class="index">01 / 02</div>
+    </div>
+  </section>
+
+  <!-- ========== SLIDE 2 ========== -->
+  <section class="slide s2" data-slide="2">
+    <div class="slide-hd">
+      <div class="brand-strip">
+        <img class="sa-logo" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHZlcnNpb249IjEuMSIgd2lkdGg9IjE4MHB4IiBoZWlnaHQ9IjMycHgiIHZpZXdCb3g9IjAgMCAxODAuMCAzMi4wIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj48ZGVmcz48Y2xpcFBhdGggaWQ9ImkwIj48cGF0aCBkPSJNMTkyMCwwIEwxOTIwLDYyNDIgTDAsNjI0MiBMMCwwIEwxOTIwLDAgWiI+PC9wYXRoPjwvY2xpcFBhdGg+PGNsaXBQYXRoIGlkPSJpMSI+PHBhdGggZD0iTTE2Ljc5MDQwNjUsMCBDMTYuOTQyMjU0LDAuNzY0MzUyMjUgMTcuMjE1NzEyLDEuNTA5NjY4NDggMTcuNjExNDQyNSwyLjIwNTI2NzEgTDIyLjgwMTE4NDUsMTEuMzI2MjA4OCBDMjMuMzg5NTkzNiwxMi4zNjAyMDA3IDIzLjcwNzYzNDcsMTMuNTA0MTUzNiAyMy43NTY4NTI3LDE0LjY1NzI4ODYgQzI5LjMxMjk3MDksMTYuMTMwMDA0OCAzMy4xNDcxMjA3LDE5LjI1ODE4MyAzMy4xNDcxMjA3LDIyLjg3OTI4MjIgQzMzLjE0NzEyMDcsMjcuOTE2NDM3NSAyNS43MjY4OTc2LDMyIDE2LjU3MzY3MDcsMzIgQzcuNDIwMjIzMDQsMzIgMCwyNy45MTY0Mzc1IDAsMjIuODc5MjgyMiBDMCwxOS4yNTg0MDcgMy44MzQ1OTExNywxNi4xMzExMjQ2IDkuMzkwMjY3OTgsMTQuNjU4MTg0NCBDOS4zMzIwMDA5MSwxNi4wMjI1MDczIDkuNjUwMDQyLDE3LjM5OTU5NTUgMTAuMzQ2MTU2OSwxOC42MjI4Mjc4IEwxNS41MzU2NzgyLDI3Ljc0Mzk5MzUgQzE1LjkzMTQwODcsMjguNDM5MzY4MiAxNi4yMDQ4NjY2LDI5LjE4NDY4NDQgMTYuMzU2NzE0MSwyOS45NDkwMzY3IEwxNi41NzM2NzA3LDI5LjU2Nzg2ODMgQzE3Ljg1ODE5NDcsMjcuMzEwMTk2MiAxNy44NTgxOTQ3LDI0LjUyODY5NzUgMTYuNTczNjcwNywyMi4yNzEyNDkzIEwxMi40MDkzNDA5LDE0Ljk1MTU2MzEgQzExLjEzNzgzODYsMTIuNjk3OTIyMSAxMS4xNDE4MTE0LDkuOTI3ODQ1MDggMTIuNDIxOTIxMyw3LjY3Nzc4NzM0IEwxMi42Mzg2NTcxLDcuMjk2NjE5MDEgQzEyLjc5MDcyNTMsOC4wNjA5NzEyNiAxMy4wNjM5NjI2LDguODA2Mjg3NDkgMTMuNDU5NjkzMSw5LjUwMTg4NjExIEwxOS42ODc0Mjc2LDIwLjQ0NzE1MDUgQzIwLjA4MzE1ODEsMjEuMTQyNzQ5MiAyMC4zNTY2MTYsMjEuODg4MDY1NCAyMC41MDg0NjM2LDIyLjY1MjQxNzYgTDIwLjcyNTQyMDEsMjIuMjcxMjQ5MyBDMjIuMDA5NzIzNCwyMC4wMTM1NzcyIDIyLjAwOTcyMzQsMTcuMjMyMDc4NSAyMC43MjU0MjAxLDE0Ljk3NDYzMDMgTDE2LjU3MzQ1LDcuNjc3NTYzMzkgQzE1LjI4OTE0NjcsNS40MTk4OTEyNCAxNS4yODkxNDY3LDIuNjM4ODQwNDggMTYuNTczNjcwNywwLjM4MTE2ODMzNiBaIE00Ny4wOTQxMzgzLDguNTYwODM0NzkgQzQ5LjExNzU5NDgsOC41NjA4MzQ3OSA1MS4wMTY1NzE1LDguODQ1MjU1MzQgNTIuNzkxMDY4Nyw5LjQ3NzAyNzMgQzUyLjY5NzcwODksMTAuNzQwNTcxMiA1Mi40Nzk4Njk1LDExLjcxOTkxODUgNTIuMTY4NDQ5NywxMi42MzU4ODcxIEM1MC40ODczMTIzLDEyLjAwNDExNTEgNDguNDk0OTc1OCwxMS43MTk5MTg1IDQ3LjA2Mjc5NzcsMTEuNzE5OTE4NSBDNDQuMzU0NDgyNSwxMS43MTk5MTg1IDQzLjEwOTI0NDYsMTIuNzkzOTk4MSA0My4xMDkyNDQ2LDE0LjQ2ODA0ODIgQzQzLjEwOTI0NDYsMTYuMTEwNzQ0OSA0NC4zMjMzNjI2LDE3LjA1ODI5MDggNDYuNTAyNDE4NiwxOC4wMDYyODQ3IEw0OC4xODM3NzY3LDE4LjczMjU2NDkgQzUyLjEzNzMyOTgsMjAuNDM4NDE2NCA1My43ODcxMjY2LDIyLjIzOSA1My43ODcxMjY2LDI1LjMwMzEyNzYgQzUzLjc4NzEyNjYsMjguOTM1ODcyNCA1MS4wNzg4MTE0LDMxLjQzMTM4MjggNDUuNzg2NDM5OSwzMS40MzEzODI4IEM0My4yMzM3MjQzLDMxLjQzMTM4MjggNDEuMTQ4MDI4LDMxLjA1MjQ1NCAzOS40MDQ2NTA4LDMwLjIzMDk5MzcgQzM5LjQ2Njg5MDYsMjguOTM1ODcyNCAzOS42NTM2MTAxLDI4LjA1MTQ4MTIgMzkuOTk1OTI5MiwyNy4wNDA1NTY1IEM0MS43MzkzMDY0LDI3Ljg2MjAxNjggNDMuOTgwODIyOSwyOC4yNzIyOTkxIDQ1LjY5MzA4MDIsMjguMjcyMjk5MSBDNDguNTg4MzM1NiwyOC4yNzIyOTkxIDUwLjIwNzIzMzEsMjcuMzI0NzUzMSA1MC4yMDcyMzMxLDI1LjQ2MTAxNDYgQzUwLjIwNzIzMzEsMjMuNjI4ODUzNiA0OS4wMjQyMzUsMjIuNzc1ODE1OSA0Ni4wOTc4NTk3LDIxLjQ4MDkxODUgTDQ0LjUxMDA4MjEsMjAuNzg1OTkxNyBDNDEuNTgzNzA2OCwxOS40OTA2NDY1IDM5LjU5MTM3MDMsMTcuODE2MzcyNCAzOS41OTEzNzAzLDE0LjQ2ODA0ODIgQzM5LjU5MTM3MDMsMTAuODY3MTA0OCA0Mi4wNTA5NDY5LDguNTYwODM0NzkgNDcuMDk0MTM4Myw4LjU2MDgzNDc5IFogTTE2MS4xOTU4NDgsMTQuMjQ3MDA2NCBDMTY2LjA4MzQ0LDE0LjI0NzAwNjQgMTY4LjIwMDQ3NywxNy41MDAzNzQ0IDE2OC4yMDA0NzcsMjEuNDgwOTE4NSBDMTY4LjIwMDQ3NywyMi40NjAyNjU4IDE2OC4xMzgyMzcsMjMuMjQ5OTI0OCAxNjguMDEzNTM3LDI0LjE2NTg5MzMgTDE1Ny4wODY0NzUsMjQuMTY1ODkzMyBDMTU3LjUyMjM3NCwyNi45Nzc0MDE3IDE1OS4xNDEwNTEsMjguMzM1Njc3OCAxNjIuMTkxOTA2LDI4LjMzNTY3NzggQzE2NC4wNTk5ODQsMjguMzM1Njc3OCAxNjUuOTU5MTgxLDI3LjkyNDk0NzcgMTY3LjY3MTIxOCwyNy4xMzUyODg3IEMxNjcuNTQ2NzM4LDI4LjA1MTQ4MTIgMTY3LjM2MDAxOSwyOS4yNTE2NDY0IDE2Ny4xNDE5NTksMzAuMjkzOTI0NiBDMTY1LjU4NTMwMSwzMS4wMjA2NTI3IDE2My45MzU1MDQsMzEuMzA0ODQ5MyAxNjIuMDk4NTQ2LDMxLjMwNDg0OTMgQzE1Ni4zNzA0OTYsMzEuMzA0ODQ5MyAxNTMuNTk5OTQxLDI4LjA4MjgzNDcgMTUzLjU5OTk0MSwyMi42ODEzMDc2IEMxNTMuNTk5OTQxLDE3Ljk3NDQ4MzMgMTU1Ljc0ODA5OCwxNC4yNDcwMDY0IDE2MS4xOTU4NDgsMTQuMjQ3MDA2NCBaIE0xNTAuNzk3MTYzLDguODEzNDUzOTkgTDE1MC43OTcxNjMsMzAuOTI2MTQ0NCBMMTQ3LjY1Mjk0OCwzMC45MjYxNDQ0IEwxNDcuNDY2NDQ5LDI4LjkwNDI5NSBDMTQ2LjU5NDQzLDMwLjM4OTEwNDcgMTQ1LjI1NTgzMiwzMS4zMDQ4NDkzIDE0My4wMTQ1MzYsMzEuMzA0ODQ5MyBDMTM4LjkwNTM4MywzMS4zMDQ4NDkzIDEzNi4xNjU1MDcsMjguMjcyMjk5MSAxMzYuMTY1NTA3LDIyLjk2NTcyODIgQzEzNi4xNjU1MDcsMTcuNDA1NjQyMiAxMzkuMDkxODgyLDE0LjI0NzAwNjQgMTQ0Ljg1MTI3MywxNC4yNDcwMDY0IEMxNDUuNzUzOTcxLDE0LjI0NzAwNjQgMTQ2LjU5NDQzLDE0LjM0MTczODYgMTQ3LjQwMzk4OSwxNC40OTk2MjU2IEwxNDcuNDAzOTg5LDkuMjg3MzM4OTUgQzE0OC40NjI1MDcsOC45MDg0MTAxNCAxNDkuNjc2NDA0LDguODEzNDUzOTkgMTUwLjc5NzE2Myw4LjgxMzQ1Mzk5IFogTTExMC4wMTM3NDUsMTQuMjQ3MDA2NCBDMTEyLjI1NTA0MSwxNC4yNDcwMDY0IDExNC4wOTE5OTksMTQuNDk5NjI1NiAxMTUuODk3Mzk1LDE1LjEzMTM5NzUgTDExNS44OTczOTUsMzAuOTI2MTQ0NCBMMTEyLjc1MzE4LDMwLjkyNjE0NDQgTDExMi41NjY2ODIsMjkuMDMwODI4NiBDMTExLjY5NDY2MiwzMC40MjA2ODIxIDExMC4zNTYwNjQsMzEuMzA0ODQ5MyAxMDguMTc3MDA4LDMxLjMwNDg0OTMgQzEwNC4wNjc2MzUsMzEuMzA0ODQ5MyAxMDEuMzI4MiwyOC4yNzIyOTkxIDEwMS4zMjgyLDIyLjk2NTcyODIgQzEwMS4zMjgyLDE3LjQwNTY0MjIgMTA0LjI1NDM1NCwxNC4yNDcwMDY0IDExMC4wMTM3NDUsMTQuMjQ3MDA2NCBaIE05NC44ODMyODgxLDguODEzNDUzOTkgTDk0Ljg4MzI4ODEsMTQuNzgzODIyMiBMMTAwLjI5OTkxOCwxNC43ODM4MjIyIEMxMDAuMjM3Njc5LDE1Ljg1NzkwMTcgMTAwLjE0NDMxOSwxNi44MzcyNDkgOTkuOTg4NDk4NiwxNy43NTMyMTc2IEw5NC44ODMyODgxLDE3Ljc1MzIxNzYgTDk0Ljg4MzI4ODEsMjUuNDkyODE2IEM5NC44ODMyODgxLDI3LjU0NjAxODkgOTUuODc5MzQ2LDI4LjMzNTY3NzggOTcuNTI5MTQyNywyOC4zMzU2Nzc4IEM5OC41MjUyMDA2LDI4LjMzNTY3NzggOTkuNDU5NDYwMSwyOC4xNDU5ODk1IDEwMC4yMDY1NTksMjcuODYyMDE2OCBDMTAwLjExMzE5OSwyOC44MDkzMzg4IDk5Ljk4ODQ5ODYsMjkuODgzNjQyMyA5OS44MDE3NzkyLDMwLjc5OTM4NjkgQzk4Ljg2Nzc0MDQsMzEuMTc4NTM5NyA5Ny44NzE2ODI1LDMxLjMwNDg0OTMgOTYuOTA2NTIzOCwzMS4zMDQ4NDkzIEM5My41NzU1ODk2LDMxLjMwNDg0OTMgOTEuNDU4NTUyOCwyOS43NTcxMDg4IDkxLjQ1ODU1MjgsMjUuOTAzMzIyMiBMOTEuNDU4NTUyOCw5LjMxODkxNjM1IEM5Mi41MTcwNzEyLDguOTcxNTY0OTQgOTMuODI0NTQ4OSw4LjgxMzQ1Mzk5IDk0Ljg4MzI4ODEsOC44MTM0NTM5OSBaIE02NC42MjE3MTE2LDE0LjI0NzAwNjQgQzY2Ljg2MzIyODEsMTQuMjQ3MDA2NCA2OC42OTk5NjUxLDE0LjQ5OTYyNTYgNzAuNTA1NTgyMSwxNS4xMzEzOTc1IEw3MC41MDU1ODIxLDMwLjkyNjE0NDQgTDY3LjM2MTM2NzQsMzAuOTI2MTQ0NCBMNjcuMTc0NjQ3OSwyOS4wMzA4Mjg2IEM2Ni4zMDI4NDksMzAuNDIwNjgyMSA2NC45NjQwMzA2LDMxLjMwNDg0OTMgNjIuNzg0OTc0NiwzMS4zMDQ4NDkzIEM1OC42NzU2MDEzLDMxLjMwNDg0OTMgNTUuOTM2MTY2MiwyOC4yNzIyOTkxIDU1LjkzNjE2NjIsMjIuOTY1NzI4MiBDNTUuOTM2MTY2MiwxNy40MDU2NDIyIDU4Ljg2MjMyMDgsMTQuMjQ3MDA2NCA2NC42MjE3MTE2LDE0LjI0NzAwNjQgWiBNMTgwLDE0LjM3MzA5MiBDMTgwLDE1LjQxNTgxODEgMTc5Ljg3NTUyLDE2LjY3OTM2MiAxNzkuNjg4ODAxLDE3LjM0MjcxMTQgQzE3OC44Nzk0NjIsMTcuMjQ3NzU1MiAxNzguMDY5OTAzLDE3LjIxNjE3NzggMTc3LjEwNDc0NSwxNy4yMTYxNzc4IEMxNzYuMjY0Mjg2LDE3LjIxNjE3NzggMTc1LjQyMzYwNywxNy4yNzk1NTY2IDE3NC41ODMxNDksMTcuNDA1NjQyMiBMMTc0LjU4MzE0OSwzMC45MjYxNDQ0IEwxNzEuMTU4NjM0LDMwLjkyNjE0NDQgTDE3MS4xNTg2MzQsMTUuMTMxMzk3NSBDMTcyLjYyMTkzMiwxNC42MjU5MzUyIDE3NS4wODEyODgsMTQuMjQ3MDA2NCAxNzcuMDExMzg1LDE0LjI0NzAwNjQgQzE3OC4wNjk5MDMsMTQuMjQ3MDA2NCAxNzkuMjUyOTAxLDE0LjI3ODU4MzggMTgwLDE0LjM3MzA5MiBaIE0xMjUuODYwMTgxLDE0LjI0NzAwNjQgQzEzMS41ODg0NTIsMTQuMjQ3MDA2NCAxMzMuNDI0OTY4LDE2LjQ4OTY3MzcgMTMzLjQyNDk2OCwyMC4zMTIxMDY4IEwxMzMuNDI0OTY4LDMwLjkyNjE0NDQgTDEzMC4wMDA4OTUsMzAuOTI2MTQ0NCBMMTMwLjAwMDg5NSwyMC45MTIzMDEzIEMxMzAuMDAwODk1LDE4LjQxNjc5MDkgMTI5LjE5MTMzNiwxNy4yMTYxNzc4IDEyNS43NjY4MjEsMTcuMjE2MTc3OCBDMTI0Ljk1NzQ4MywxNy4yMTYxNzc4IDEyMy45OTIzMjQsMTcuMzExMTM0IDEyMy4wNTg1MDYsMTcuNDY5MDIxIEwxMjMuMDU4NTA2LDMwLjkyNjE0NDQgTDExOS42MzM5OTIsMzAuOTI2MTQ0NCBMMTE5LjYzMzk5MiwxNS4xMzEzOTc1IEMxMjEuODEzMDQ4LDE0LjU5NDM1NzggMTI0LjIxMDE2NCwxNC4yNDcwMDY0IDEyNS44NjAxODEsMTQuMjQ3MDA2NCBaIE04MC40NjgzNjgyLDE0LjI0NzAwNjQgQzg2LjE5NjYzOTEsMTQuMjQ3MDA2NCA4OC4wMzMxNTUzLDE2LjQ4OTY3MzcgODguMDMzMTU1MywyMC4zMTIxMDY4IEw4OC4wMzMxNTUzLDMwLjkyNjE0NDQgTDg0LjYwODg2MTUsMzAuOTI2MTQ0NCBMODQuNjA4ODYxNSwyMC45MTIzMDEzIEM4NC42MDg4NjE1LDE4LjQxNjc5MDkgODMuNzk5MzAyMywxNy4yMTYxNzc4IDgwLjM3NTAwODQsMTcuMjE2MTc3OCBDNzkuNTY1NDQ5MywxNy4yMTYxNzc4IDc4LjYwMDUxMTMsMTcuMzExMTM0IDc3LjY2NjQ3MjUsMTcuNDY5MDIxIEw3Ny42NjY0NzI1LDMwLjkyNjE0NDQgTDc0LjI0MjE3ODYsMzAuOTI2MTQ0NCBMNzQuMjQyMTc4NiwxNS4xMzEzOTc1IEM3Ni40MjEyMzQ2LDE0LjU5NDM1NzggNzguODE4MzUwNywxNC4yNDcwMDY0IDgwLjQ2ODM2ODIsMTQuMjQ3MDA2NCBaIE0xNDQuNjY0MzMzLDE3LjIxNjE3NzggQzE0MS4yNzA5MzgsMTcuMjE2MTc3OCAxMzkuNjUyMjYxLDE5LjM2NDU2MDggMTM5LjY1MjI2MSwyMi45NjU3MjgyIEMxMzkuNjUyMjYxLDI2LjE4NzUxODggMTQwLjkyODg0LDI4LjQ2MjIxMTQgMTQzLjk3OTY5NSwyOC40NjIyMTE0IEMxNDUuMzQ5NDEyLDI4LjQ2MjIxMTQgMTQ2LjQ3MDE3MSwyNy45ODgxMDI1IDE0Ny40MDM5ODksMjcuMjYxMzc0NCBMMTQ3LjQwMzk4OSwxNy41MzIxNzU4IEMxNDYuNTAxMjkxLDE3LjM0MjcxMTQgMTQ1LjU2NzI1MiwxNy4yMTYxNzc4IDE0NC42NjQzMzMsMTcuMjE2MTc3OCBaIE0xMTAuMDEzNzQ1LDE3LjIxNjE3NzggQzEwNi40NjQ1MywxNy4yMTYxNzc4IDEwNC44MTQ3MzQsMTkuNDI3NzE1NiAxMDQuODE0NzM0LDIyLjk2NTcyODIgQzEwNC44MTQ3MzQsMjYuMTg3NTE4OCAxMDYuMDkxMzEyLDI4LjQ2MjIxMTQgMTA5LjE0MTk0NiwyOC40NjIyMTE0IEMxMTAuNDgwMzIzLDI4LjQ2MjIxMTQgMTExLjU3MDQwMywyOC4wMTk5MDM4IDExMi40NzI4OCwyNy4zMjQ3NTMxIEwxMTIuNDcyODgsMTcuNDA1NjQyMiBDMTExLjc1NzEyMiwxNy4yNzk1NTY2IDExMC45Nzg0NjMsMTcuMjE2MTc3OCAxMTAuMDEzNzQ1LDE3LjIxNjE3NzggWiBNNjQuNjIxNzExNiwxNy4yMTYxNzc4IEM2MS4wNzI3MTc0LDE3LjIxNjE3NzggNTkuNDIyOTIwNiwxOS40Mjc3MTU2IDU5LjQyMjkyMDYsMjIuOTY1NzI4MiBDNTkuNDIyOTIwNiwyNi4xODc1MTg4IDYwLjY5OTI3ODQsMjguNDYyMjExNCA2My43NTAxMzMzLDI4LjQ2MjIxMTQgQzY1LjA4ODczMSwyOC40NjIyMTE0IDY2LjE3ODM2OTMsMjguMDE5OTAzOCA2Ny4wODEwNjc1LDI3LjMyNDc1MzEgTDY3LjA4MTA2NzUsMTcuNDA1NjQyMiBDNjYuMzY1MDg4OCwxNy4yNzk1NTY2IDY1LjU4Njg3MDMsMTcuMjE2MTc3OCA2NC42MjE3MTE2LDE3LjIxNjE3NzggWiBNMTYxLjAwOTEyOSwxNy4xNTMwMjMgQzE1OC41ODA4OTMsMTcuMTUzMDIzIDE1Ny4zMDQ1MzUsMTguNTc0Njc3OSAxNTcuMDI0MjM1LDIxLjI1OTY1MjcgTDE2NC43NDUwNjMsMjEuMjU5NjUyNyBDMTY0Ljc0NTA2MywxOC42Njk0MTAxIDE2My4zNzUzNDYsMTcuMTUzMDIzIDE2MS4wMDkxMjksMTcuMTUzMDIzIFoiPjwvcGF0aD48L2NsaXBQYXRoPjwvZGVmcz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMjMyLjAgLTEyMS4wKSI+PGcgY2xpcC1wYXRoPSJ1cmwoI2kwKSI+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjMyLjAgMTIxLjApIj48ZyBjbGlwLXBhdGg9InVybCgjaTEpIj48cG9seWdvbiBwb2ludHM9IjAsMCAxODAsMCAxODAsMzIgMCwzMiAwLDAiIHN0cm9rZT0ibm9uZSIgZmlsbD0iI0VDMDAwMCI+PC9wb2x5Z29uPjwvZz48L2c+PC9nPjwvZz48L3N2Zz4=" alt="Santander" />
+        <span class="sep">|</span>
+        <span class="product">Financial Pulse <span>· Demo interativa</span></span>
+      </div>
+      <div class="hd-meta">A prova</div>
+    </div>
+
+    <div class="s2-body">
+
+      <div class="left-col">
+        <div class="kicker">A experiência</div>
+        <h2 class="h2">
+          <span class="stack">Saúde</span>
+          <span class="stack"><em>financeira</em>,</span>
+          <span class="stack">contínua,</span>
+          <span class="stack">explicável,</span>
+          <span class="stack" style="color:var(--red);font-style:italic">conversável.</span>
+        </h2>
+        <p class="left-sub">
+          Integrado no Santander Select. <strong>Cada vez que o cliente abre a app, recebe um insight com explicação e ação.</strong> Não é um menu novo. É a app a falar.
+        </p>
+        <div class="pillars">
+          <div class="pillar">
+            <span class="pillar-name">Mede</span>
+            <span class="pillar-desc">Posição, padrões, calendário, score contínuo.</span>
+          </div>
+          <div class="pillar key">
+            <span class="pillar-name">Explica</span>
+            <span class="pillar-desc"><b>O coração do produto.</b> Cada insight diz <i>o que mudou</i> e <i>em que peso</i> — não um número opaco.</span>
+          </div>
+          <div class="pillar">
+            <span class="pillar-name">Age</span>
+            <span class="pillar-desc">Recomendação contextual, ligada a um insight real.</span>
+          </div>
+          <div class="pillar" style="border-left:2px solid rgba(236,0,0,0.35);padding-left:12px;margin-left:-14px;">
+            <span class="pillar-name" style="color:rgba(255,255,255,0.7)">Conversa</span>
+            <span class="pillar-desc">O cliente pergunta, o Pulse responde. À semelhança do AIR da Revolut — mas iniciado pelo banco, não pelo cliente.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====== PHONE ====== -->
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="camera"></div>
+
+            <div class="status">
+              <span>19:33</span>
+              <span class="status-icons">
+                <span style="font-size:8px">●●● 5G</span>
+                <span class="status-batt">60</span>
+              </span>
+            </div>
+
+            <div class="app-bar">
+              <div class="app-bar-left">
+                <img class="sa-logo-sm" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHZlcnNpb249IjEuMSIgd2lkdGg9IjE4MHB4IiBoZWlnaHQ9IjMycHgiIHZpZXdCb3g9IjAgMCAxODAuMCAzMi4wIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj48ZGVmcz48Y2xpcFBhdGggaWQ9ImkwIj48cGF0aCBkPSJNMTkyMCwwIEwxOTIwLDYyNDIgTDAsNjI0MiBMMCwwIEwxOTIwLDAgWiI+PC9wYXRoPjwvY2xpcFBhdGg+PGNsaXBQYXRoIGlkPSJpMSI+PHBhdGggZD0iTTE2Ljc5MDQwNjUsMCBDMTYuOTQyMjU0LDAuNzY0MzUyMjUgMTcuMjE1NzEyLDEuNTA5NjY4NDggMTcuNjExNDQyNSwyLjIwNTI2NzEgTDIyLjgwMTE4NDUsMTEuMzI2MjA4OCBDMjMuMzg5NTkzNiwxMi4zNjAyMDA3IDIzLjcwNzYzNDcsMTMuNTA0MTUzNiAyMy43NTY4NTI3LDE0LjY1NzI4ODYgQzI5LjMxMjk3MDksMTYuMTMwMDA0OCAzMy4xNDcxMjA3LDE5LjI1ODE4MyAzMy4xNDcxMjA3LDIyLjg3OTI4MjIgQzMzLjE0NzEyMDcsMjcuOTE2NDM3NSAyNS43MjY4OTc2LDMyIDE2LjU3MzY3MDcsMzIgQzcuNDIwMjIzMDQsMzIgMCwyNy45MTY0Mzc1IDAsMjIuODc5MjgyMiBDMCwxOS4yNTg0MDcgMy44MzQ1OTExNywxNi4xMzExMjQ2IDkuMzkwMjY3OTgsMTQuNjU4MTg0NCBDOS4zMzIwMDA5MSwxNi4wMjI1MDczIDkuNjUwMDQyLDE3LjM5OTU5NTUgMTAuMzQ2MTU2OSwxOC42MjI4Mjc4IEwxNS41MzU2NzgyLDI3Ljc0Mzk5MzUgQzE1LjkzMTQwODcsMjguNDM5MzY4MiAxNi4yMDQ4NjY2LDI5LjE4NDY4NDQgMTYuMzU2NzE0MSwyOS45NDkwMzY3IEwxNi41NzM2NzA3LDI5LjU2Nzg2ODMgQzE3Ljg1ODE5NDcsMjcuMzEwMTk2MiAxNy44NTgxOTQ3LDI0LjUyODY5NzUgMTYuNTczNjcwNywyMi4yNzEyNDkzIEwxMi40MDkzNDA5LDE0Ljk1MTU2MzEgQzExLjEzNzgzODYsMTIuNjk3OTIyMSAxMS4xNDE4MTE0LDkuOTI3ODQ1MDggMTIuNDIxOTIxMyw3LjY3Nzc4NzM0IEwxMi42Mzg2NTcxLDcuMjk2NjE5MDEgQzEyLjc5MDcyNTMsOC4wNjA5NzEyNiAxMy4wNjM5NjI2LDguODA2Mjg3NDkgMTMuNDU5NjkzMSw5LjUwMTg4NjExIEwxOS42ODc0Mjc2LDIwLjQ0NzE1MDUgQzIwLjA4MzE1ODEsMjEuMTQyNzQ5MiAyMC4zNTY2MTYsMjEuODg4MDY1NCAyMC41MDg0NjM2LDIyLjY1MjQxNzYgTDIwLjcyNTQyMDEsMjIuMjcxMjQ5MyBDMjIuMDA5NzIzNCwyMC4wMTM1NzcyIDIyLjAwOTcyMzQsMTcuMjMyMDc4NSAyMC43MjU0MjAxLDE0Ljk3NDYzMDMgTDE2LjU3MzQ1LDcuNjc3NTYzMzkgQzE1LjI4OTE0NjcsNS40MTk4OTEyNCAxNS4yODkxNDY3LDIuNjM4ODQwNDggMTYuNTczNjcwNywwLjM4MTE2ODMzNiBaIE00Ny4wOTQxMzgzLDguNTYwODM0NzkgQzQ5LjExNzU5NDgsOC41NjA4MzQ3OSA1MS4wMTY1NzE1LDguODQ1MjU1MzQgNTIuNzkxMDY4Nyw5LjQ3NzAyNzMgQzUyLjY5NzcwODksMTAuNzQwNTcxMiA1Mi40Nzk4Njk1LDExLjcxOTkxODUgNTIuMTY4NDQ5NywxMi42MzU4ODcxIEM1MC40ODczMTIzLDEyLjAwNDExNTEgNDguNDk0OTc1OCwxMS43MTk5MTg1IDQ3LjA2Mjc5NzcsMTEuNzE5OTE4NSBDNDQuMzU0NDgyNSwxMS43MTk5MTg1IDQzLjEwOTI0NDYsMTIuNzkzOTk4MSA0My4xMDkyNDQ2LDE0LjQ2ODA0ODIgQzQzLjEwOTI0NDYsMTYuMTEwNzQ0OSA0NC4zMjMzNjI2LDE3LjA1ODI5MDggNDYuNTAyNDE4NiwxOC4wMDYyODQ3IEw0OC4xODM3NzY3LDE4LjczMjU2NDkgQzUyLjEzNzMyOTgsMjAuNDM4NDE2NCA1My43ODcxMjY2LDIyLjIzOSA1My43ODcxMjY2LDI1LjMwMzEyNzYgQzUzLjc4NzEyNjYsMjguOTM1ODcyNCA1MS4wNzg4MTE0LDMxLjQzMTM4MjggNDUuNzg2NDM5OSwzMS40MzEzODI4IEM0My4yMzM3MjQzLDMxLjQzMTM4MjggNDEuMTQ4MDI4LDMxLjA1MjQ1NCAzOS40MDQ2NTA4LDMwLjIzMDk5MzcgQzM5LjQ2Njg5MDYsMjguOTM1ODcyNCAzOS42NTM2MTAxLDI4LjA1MTQ4MTIgMzkuOTk1OTI5MiwyNy4wNDA1NTY1IEM0MS43MzkzMDY0LDI3Ljg2MjAxNjggNDMuOTgwODIyOSwyOC4yNzIyOTkxIDQ1LjY5MzA4MDIsMjguMjcyMjk5MSBDNDguNTg4MzM1NiwyOC4yNzIyOTkxIDUwLjIwNzIzMzEsMjcuMzI0NzUzMSA1MC4yMDcyMzMxLDI1LjQ2MTAxNDYgQzUwLjIwNzIzMzEsMjMuNjI4ODUzNiA0OS4wMjQyMzUsMjIuNzc1ODE1OSA0Ni4wOTc4NTk3LDIxLjQ4MDkxODUgTDQ0LjUxMDA4MjEsMjAuNzg1OTkxNyBDNDEuNTgzNzA2OCwxOS40OTA2NDY1IDM5LjU5MTM3MDMsMTcuODE2MzcyNCAzOS41OTEzNzAzLDE0LjQ2ODA0ODIgQzM5LjU5MTM3MDMsMTAuODY3MTA0OCA0Mi4wNTA5NDY5LDguNTYwODM0NzkgNDcuMDk0MTM4Myw4LjU2MDgzNDc5IFogTTE2MS4xOTU4NDgsMTQuMjQ3MDA2NCBDMTY2LjA4MzQ0LDE0LjI0NzAwNjQgMTY4LjIwMDQ3NywxNy41MDAzNzQ0IDE2OC4yMDA0NzcsMjEuNDgwOTE4NSBDMTY4LjIwMDQ3NywyMi40NjAyNjU4IDE2OC4xMzgyMzcsMjMuMjQ5OTI0OCAxNjguMDEzNTM3LDI0LjE2NTg5MzMgTDE1Ny4wODY0NzUsMjQuMTY1ODkzMyBDMTU3LjUyMjM3NCwyNi45Nzc0MDE3IDE1OS4xNDEwNTEsMjguMzM1Njc3OCAxNjIuMTkxOTA2LDI4LjMzNTY3NzggQzE2NC4wNTk5ODQsMjguMzM1Njc3OCAxNjUuOTU5MTgxLDI3LjkyNDk0NzcgMTY3LjY3MTIxOCwyNy4xMzUyODg3IEMxNjcuNTQ2NzM4LDI4LjA1MTQ4MTIgMTY3LjM2MDAxOSwyOS4yNTE2NDY0IDE2Ny4xNDE5NTksMzAuMjkzOTI0NiBDMTY1LjU4NTMwMSwzMS4wMjA2NTI3IDE2My45MzU1MDQsMzEuMzA0ODQ5MyAxNjIuMDk4NTQ2LDMxLjMwNDg0OTMgQzE1Ni4zNzA0OTYsMzEuMzA0ODQ5MyAxNTMuNTk5OTQxLDI4LjA4MjgzNDcgMTUzLjU5OTk0MSwyMi42ODEzMDc2IEMxNTMuNTk5OTQxLDE3Ljk3NDQ4MzMgMTU1Ljc0ODA5OCwxNC4yNDcwMDY0IDE2MS4xOTU4NDgsMTQuMjQ3MDA2NCBaIE0xNTAuNzk3MTYzLDguODEzNDUzOTkgTDE1MC43OTcxNjMsMzAuOTI2MTQ0NCBMMTQ3LjY1Mjk0OCwzMC45MjYxNDQ0IEwxNDcuNDY2NDQ5LDI4LjkwNDI5NSBDMTQ2LjU5NDQzLDMwLjM4OTEwNDcgMTQ1LjI1NTgzMiwzMS4zMDQ4NDkzIDE0My4wMTQ1MzYsMzEuMzA0ODQ5MyBDMTM4LjkwNTM4MywzMS4zMDQ4NDkzIDEzNi4xNjU1MDcsMjguMjcyMjk5MSAxMzYuMTY1NTA3LDIyLjk2NTcyODIgQzEzNi4xNjU1MDcsMTcuNDA1NjQyMiAxMzkuMDkxODgyLDE0LjI0NzAwNjQgMTQ0Ljg1MTI3MywxNC4yNDcwMDY0IEMxNDUuNzUzOTcxLDE0LjI0NzAwNjQgMTQ2LjU5NDQzLDE0LjM0MTczODYgMTQ3LjQwMzk4OSwxNC40OTk2MjU2IEwxNDcuNDAzOTg5LDkuMjg3MzM4OTUgQzE0OC40NjI1MDcsOC45MDg0MTAxNCAxNDkuNjc2NDA0LDguODEzNDUzOTkgMTUwLjc5NzE2Myw4LjgxMzQ1Mzk5IFogTTExMC4wMTM3NDUsMTQuMjQ3MDA2NCBDMTEyLjI1NTA0MSwxNC4yNDcwMDY0IDExNC4wOTE5OTksMTQuNDk5NjI1NiAxMTUuODk3Mzk1LDE1LjEzMTM5NzUgTDExNS44OTczOTUsMzAuOTI2MTQ0NCBMMTEyLjc1MzE4LDMwLjkyNjE0NDQgTDExMi41NjY2ODIsMjkuMDMwODI4NiBDMTExLjY5NDY2MiwzMC40MjA2ODIxIDExMC4zNTYwNjQsMzEuMzA0ODQ5MyAxMDguMTc3MDA4LDMxLjMwNDg0OTMgQzEwNC4wNjc2MzUsMzEuMzA0ODQ5MyAxMDEuMzI4MiwyOC4yNzIyOTkxIDEwMS4zMjgyLDIyLjk2NTcyODIgQzEwMS4zMjgyLDE3LjQwNTY0MjIgMTA0LjI1NDM1NCwxNC4yNDcwMDY0IDExMC4wMTM3NDUsMTQuMjQ3MDA2NCBaIE05NC44ODMyODgxLDguODEzNDUzOTkgTDk0Ljg4MzI4ODEsMTQuNzgzODIyMiBMMTAwLjI5OTkxOCwxNC43ODM4MjIyIEMxMDAuMjM3Njc5LDE1Ljg1NzkwMTcgMTAwLjE0NDMxOSwxNi44MzcyNDkgOTkuOTg4NDk4NiwxNy43NTMyMTc2IEw5NC44ODMyODgxLDE3Ljc1MzIxNzYgTDk0Ljg4MzI4ODEsMjUuNDkyODE2IEM5NC44ODMyODgxLDI3LjU0NjAxODkgOTUuODc5MzQ2LDI4LjMzNTY3NzggOTcuNTI5MTQyNywyOC4zMzU2Nzc4IEM5OC41MjUyMDA2LDI4LjMzNTY3NzggOTkuNDU5NDYwMSwyOC4xNDU5ODk1IDEwMC4yMDY1NTksMjcuODYyMDE2OCBDMTAwLjExMzE5OSwyOC44MDkzMzg4IDk5Ljk4ODQ5ODYsMjkuODgzNjQyMyA5OS44MDE3NzkyLDMwLjc5OTM4NjkgQzk4Ljg2Nzc0MDQsMzEuMTc4NTM5NyA5Ny44NzE2ODI1LDMxLjMwNDg0OTMgOTYuOTA2NTIzOCwzMS4zMDQ4NDkzIEM5My41NzU1ODk2LDMxLjMwNDg0OTMgOTEuNDU4NTUyOCwyOS43NTcxMDg4IDkxLjQ1ODU1MjgsMjUuOTAzMzIyMiBMOTEuNDU4NTUyOCw5LjMxODkxNjM1IEM5Mi41MTcwNzEyLDguOTcxNTY0OTQgOTMuODI0NTQ4OSw4LjgxMzQ1Mzk5IDk0Ljg4MzI4ODEsOC44MTM0NTM5OSBaIE02NC42MjE3MTE2LDE0LjI0NzAwNjQgQzY2Ljg2MzIyODEsMTQuMjQ3MDA2NCA2OC42OTk5NjUxLDE0LjQ5OTYyNTYgNzAuNTA1NTgyMSwxNS4xMzEzOTc1IEw3MC41MDU1ODIxLDMwLjkyNjE0NDQgTDY3LjM2MTM2NzQsMzAuOTI2MTQ0NCBMNjcuMTc0NjQ3OSwyOS4wMzA4Mjg2IEM2Ni4zMDI4NDksMzAuNDIwNjgyMSA2NC45NjQwMzA2LDMxLjMwNDg0OTMgNjIuNzg0OTc0NiwzMS4zMDQ4NDkzIEM1OC42NzU2MDEzLDMxLjMwNDg0OTMgNTUuOTM2MTY2MiwyOC4yNzIyOTkxIDU1LjkzNjE2NjIsMjIuOTY1NzI4MiBDNTUuOTM2MTY2MiwxNy40MDU2NDIyIDU4Ljg2MjMyMDgsMTQuMjQ3MDA2NCA2NC42MjE3MTE2LDE0LjI0NzAwNjQgWiBNMTgwLDE0LjM3MzA5MiBDMTgwLDE1LjQxNTgxODEgMTc5Ljg3NTUyLDE2LjY3OTM2MiAxNzkuNjg4ODAxLDE3LjM0MjcxMTQgQzE3OC44Nzk0NjIsMTcuMjQ3NzU1MiAxNzguMDY5OTAzLDE3LjIxNjE3NzggMTc3LjEwNDc0NSwxNy4yMTYxNzc4IEMxNzYuMjY0Mjg2LDE3LjIxNjE3NzggMTc1LjQyMzYwNywxNy4yNzk1NTY2IDE3NC41ODMxNDksMTcuNDA1NjQyMiBMMTc0LjU4MzE0OSwzMC45MjYxNDQ0IEwxNzEuMTU4NjM0LDMwLjkyNjE0NDQgTDE3MS4xNTg2MzQsMTUuMTMxMzk3NSBDMTcyLjYyMTkzMiwxNC42MjU5MzUyIDE3NS4wODEyODgsMTQuMjQ3MDA2NCAxNzcuMDExMzg1LDE0LjI0NzAwNjQgQzE3OC4wNjk5MDMsMTQuMjQ3MDA2NCAxNzkuMjUyOTAxLDE0LjI3ODU4MzggMTgwLDE0LjM3MzA5MiBaIE0xMjUuODYwMTgxLDE0LjI0NzAwNjQgQzEzMS41ODg0NTIsMTQuMjQ3MDA2NCAxMzMuNDI0OTY4LDE2LjQ4OTY3MzcgMTMzLjQyNDk2OCwyMC4zMTIxMDY4IEwxMzMuNDI0OTY4LDMwLjkyNjE0NDQgTDEzMC4wMDA4OTUsMzAuOTI2MTQ0NCBMMTMwLjAwMDg5NSwyMC45MTIzMDEzIEMxMzAuMDAwODk1LDE4LjQxNjc5MDkgMTI5LjE5MTMzNiwxNy4yMTYxNzc4IDEyNS43NjY4MjEsMTcuMjE2MTc3OCBDMTI0Ljk1NzQ4MywxNy4yMTYxNzc4IDEyMy45OTIzMjQsMTcuMzExMTM0IDEyMy4wNTg1MDYsMTcuNDY5MDIxIEwxMjMuMDU4NTA2LDMwLjkyNjE0NDQgTDExOS42MzM5OTIsMzAuOTI2MTQ0NCBMMTE5LjYzMzk5MiwxNS4xMzEzOTc1IEMxMjEuODEzMDQ4LDE0LjU5NDM1NzggMTI0LjIxMDE2NCwxNC4yNDcwMDY0IDEyNS44NjAxODEsMTQuMjQ3MDA2NCBaIE04MC40NjgzNjgyLDE0LjI0NzAwNjQgQzg2LjE5NjYzOTEsMTQuMjQ3MDA2NCA4OC4wMzMxNTUzLDE2LjQ4OTY3MzcgODguMDMzMTU1MywyMC4zMTIxMDY4IEw4OC4wMzMxNTUzLDMwLjkyNjE0NDQgTDg0LjYwODg2MTUsMzAuOTI2MTQ0NCBMODQuNjA4ODYxNSwyMC45MTIzMDEzIEM4NC42MDg4NjE1LDE4LjQxNjc5MDkgODMuNzk5MzAyMywxNy4yMTYxNzc4IDgwLjM3NTAwODQsMTcuMjE2MTc3OCBDNzkuNTY1NDQ5MywxNy4yMTYxNzc4IDc4LjYwMDUxMTMsMTcuMzExMTM0IDc3LjY2NjQ3MjUsMTcuNDY5MDIxIEw3Ny42NjY0NzI1LDMwLjkyNjE0NDQgTDc0LjI0MjE3ODYsMzAuOTI2MTQ0NCBMNzQuMjQyMTc4NiwxNS4xMzEzOTc1IEM3Ni40MjEyMzQ2LDE0LjU5NDM1NzggNzguODE4MzUwNywxNC4yNDcwMDY0IDgwLjQ2ODM2ODIsMTQuMjQ3MDA2NCBaIE0xNDQuNjY0MzMzLDE3LjIxNjE3NzggQzE0MS4yNzA5MzgsMTcuMjE2MTc3OCAxMzkuNjUyMjYxLDE5LjM2NDU2MDggMTM5LjY1MjI2MSwyMi45NjU3MjgyIEMxMzkuNjUyMjYxLDI2LjE4NzUxODggMTQwLjkyODg0LDI4LjQ2MjIxMTQgMTQzLjk3OTY5NSwyOC40NjIyMTE0IEMxNDUuMzQ5NDEyLDI4LjQ2MjIxMTQgMTQ2LjQ3MDE3MSwyNy45ODgxMDI1IDE0Ny40MDM5ODksMjcuMjYxMzc0NCBMMTQ3LjQwMzk4OSwxNy41MzIxNzU4IEMxNDYuNTAxMjkxLDE3LjM0MjcxMTQgMTQ1LjU2NzI1MiwxNy4yMTYxNzc4IDE0NC42NjQzMzMsMTcuMjE2MTc3OCBaIE0xMTAuMDEzNzQ1LDE3LjIxNjE3NzggQzEwNi40NjQ1MywxNy4yMTYxNzc4IDEwNC44MTQ3MzQsMTkuNDI3NzE1NiAxMDQuODE0NzM0LDIyLjk2NTcyODIgQzEwNC44MTQ3MzQsMjYuMTg3NTE4OCAxMDYuMDkxMzEyLDI4LjQ2MjIxMTQgMTA5LjE0MTk0NiwyOC40NjIyMTE0IEMxMTAuNDgwMzIzLDI4LjQ2MjIxMTQgMTExLjU3MDQwMywyOC4wMTk5MDM4IDExMi40NzI4OCwyNy4zMjQ3NTMxIEwxMTIuNDcyODgsMTcuNDA1NjQyMiBDMTExLjc1NzEyMiwxNy4yNzk1NTY2IDExMC45Nzg0NjMsMTcuMjE2MTc3OCAxMTAuMDEzNzQ1LDE3LjIxNjE3NzggWiBNNjQuNjIxNzExNiwxNy4yMTYxNzc4IEM2MS4wNzI3MTc0LDE3LjIxNjE3NzggNTkuNDIyOTIwNiwxOS40Mjc3MTU2IDU5LjQyMjkyMDYsMjIuOTY1NzI4MiBDNTkuNDIyOTIwNiwyNi4xODc1MTg4IDYwLjY5OTI3ODQsMjguNDYyMjExNCA2My43NTAxMzMzLDI4LjQ2MjIxMTQgQzY1LjA4ODczMSwyOC40NjIyMTE0IDY2LjE3ODM2OTMsMjguMDE5OTAzOCA2Ny4wODEwNjc1LDI3LjMyNDc1MzEgTDY3LjA4MTA2NzUsMTcuNDA1NjQyMiBDNjYuMzY1MDg4OCwxNy4yNzk1NTY2IDY1LjU4Njg3MDMsMTcuMjE2MTc3OCA2NC42MjE3MTE2LDE3LjIxNjE3NzggWiBNMTYxLjAwOTEyOSwxNy4xNTMwMjMgQzE1OC41ODA4OTMsMTcuMTUzMDIzIDE1Ny4zMDQ1MzUsMTguNTc0Njc3OSAxNTcuMDI0MjM1LDIxLjI1OTY1MjcgTDE2NC43NDUwNjMsMjEuMjU5NjUyNyBDMTY0Ljc0NTA2MywxOC42Njk0MTAxIDE2My4zNzUzNDYsMTcuMTUzMDIzIDE2MS4wMDkxMjksMTcuMTUzMDIzIFoiPjwvcGF0aD48L2NsaXBQYXRoPjwvZGVmcz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMjMyLjAgLTEyMS4wKSI+PGcgY2xpcC1wYXRoPSJ1cmwoI2kwKSI+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjMyLjAgMTIxLjApIj48ZyBjbGlwLXBhdGg9InVybCgjaTEpIj48cG9seWdvbiBwb2ludHM9IjAsMCAxODAsMCAxODAsMzIgMCwzMiAwLDAiIHN0cm9rZT0ibm9uZSIgZmlsbD0iI0VDMDAwMCI+PC9wb2x5Z29uPjwvZz48L2c+PC9nPjwvZz48L3N2Zz4=" alt="Santander" />
+                <span class="pipe">|</span>
+                <span class="tier">Select</span>
+              </div>
+              <div class="app-bar-right">
+                <svg><use href="#env"/></svg>
+                <svg><use href="#search"/></svg>
+                <svg><use href="#menu"/></svg>
+              </div>
+            </div>
+
+            <div class="views">
+
+              <!-- =========== PULSE VIEW (insight-first) =========== -->
+              <div class="view active" data-view="pulse">
+                <div class="greet-row">
+                  <div class="greet">Olá, <b>Inês</b></div>
+                  <div class="greet-action">
+                    <svg><use href="#eye"/></svg>
+                    <span>Mostrar</span>
+                  </div>
+                </div>
+
+                <!-- Compact Pulse bar (no longer the hero) -->
+                <div class="pulse-bar">
+                  <div class="pb-ring">
+                    <svg viewBox="0 0 50 50">
+                      <circle class="ring-bg" cx="25" cy="25" r="20"/>
+                      <circle class="ring-fg" cx="25" cy="25" r="20"/>
+                    </svg>
+                    <div class="pb-ring-c"></div>
+                  </div>
+                  <div class="pb-info">
+                    <div class="pb-label">O seu Pulse hoje</div>
+                    <div class="pb-score">74<em> /100</em></div>
+                  </div>
+                  <div class="pb-delta">↑ +3</div>
+                </div>
+
+                <!-- INSIGHTS FEED — the actual product -->
+                <div class="pillars-strip">
+                  <button class="p-chip" data-go-view="chat">💬 Pergunta algo</button>
+                  <button class="p-chip" data-go-view="chat">O que mudou?</button>
+                  <button class="p-chip" data-go-view="chat">Próximos pagamentos</button>
+                  <button class="p-chip" data-go-view="chat">Poupar mais</button>
+                  <button class="p-chip" data-go-view="chat">Subscrições</button>
+                </div>
+                <div class="feed-head">
+                  <div class="feed-title">3 <b>insights</b> para si</div>
+                  <div class="feed-meta">há 2h</div>
+                </div>
+
+                <!-- HERO INSIGHT — with explainability -->
+                <div class="insight-hero">
+                  <div class="ih-top">
+                    <span class="ih-pill">O que mudou</span>
+                    <span class="ih-time">esta semana</span>
+                  </div>
+                  <div class="ih-headline">
+                    O seu Pulse <b>caiu 3 pontos</b> porque a poupança projetada baixou para €340.
+                  </div>
+
+                  <!-- The "why" breakdown — explainability moment -->
+                  <div class="why">
+                    <div class="why-label">
+                      <svg><use href="#why"/></svg>
+                      Porquê?
+                    </div>
+                    <div class="why-row">
+                      <span class="why-cat">Restauração</span>
+                      <span class="why-bar-wrap"><span class="why-bar" style="--w:0.75"></span></span>
+                      <span class="why-pct">75%</span>
+                    </div>
+                    <div class="why-row">
+                      <span class="why-cat">Subscrições</span>
+                      <span class="why-bar-wrap"><span class="why-bar" style="--w:0.17"></span></span>
+                      <span class="why-pct">17%</span>
+                    </div>
+                    <div class="why-row">
+                      <span class="why-cat">Outros</span>
+                      <span class="why-bar-wrap"><span class="why-bar" style="--w:0.08"></span></span>
+                      <span class="why-pct">8%</span>
+                    </div>
+                  </div>
+
+                  <div class="ih-actions">
+                    <button class="ih-btn" data-go-view="timeline">
+                      <b>O que aí vem ›</b>
+                      próximos 14 dias
+                    </button>
+                    <button class="ih-btn" data-go-view="action">
+                      <b>O que fazer ›</b>
+                      3 ações para si
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Secondary insights — stacked -->
+                <div class="insights-mini">
+                  <div class="ins-mini" data-go-view="timeline">
+                    <div class="ins-mini-icon"><svg><use href="#cal"/></svg></div>
+                    <div class="ins-mini-body">
+                      <div class="ins-mini-k">O que aí vem</div>
+                      <div class="ins-mini-t"><b>€480</b> em pagamentos previstos · saldo no fim do mês <b>€1.250</b></div>
+                    </div>
+                    <div class="ins-mini-arrow">›</div>
+                  </div>
+                  <div class="ins-mini" data-go-view="action">
+                    <div class="ins-mini-icon"><svg><use href="#target"/></svg></div>
+                    <div class="ins-mini-body">
+                      <div class="ins-mini-k">O que pode fazer</div>
+                      <div class="ins-mini-t">3 ações personalizadas para subir o pulse <b>+5 pts</b></div>
+                    </div>
+                    <div class="ins-mini-arrow">›</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- =========== TIMELINE VIEW =========== -->
+              <div class="view" data-view="timeline">
+                <div class="v-head">
+                  <button class="v-back" data-go-view="pulse">
+                    <svg style="width:12px;height:12px"><use href="#back"/></svg>
+                    Voltar
+                  </button>
+                  <div class="v-title">O que aí vem</div>
+                  <div class="v-sub">Próximos 14 dias · com explicação</div>
+                </div>
+
+                <div class="tl-summary">
+                  <div class="tl-sum-k">⚡ Insight</div>
+                  <div class="tl-sum-t">
+                    Nos próximos 14 dias tem <b>€480</b> em pagamentos. <b>Tem cobertura</b> — o ordenado entra antes da renda.
+                  </div>
+                </div>
+
+                <div class="tl-chart">
+                  <div class="tl-baseline"></div>
+                  <span class="tl-baseline-l">€750 mín.</span>
+                  <svg class="tl-line" viewBox="0 0 280 60" preserveAspectRatio="none">
+                    <defs>
+                      <linearGradient id="tlGrad" x1="0" x2="0" y1="0" y2="1">
+                        <stop offset="0%" stop-color="#EC0000" stop-opacity="0.28"/>
+                        <stop offset="100%" stop-color="#EC0000" stop-opacity="0"/>
+                      </linearGradient>
+                    </defs>
+                    <path d="M0 12 L40 16 L80 20 L100 38 L130 42 L160 22 L200 28 L230 44 L260 40 L280 46 L280 60 L0 60 Z" fill="url(#tlGrad)"/>
+                    <path d="M0 12 L40 16 L80 20 L100 38 L130 42 L160 22 L200 28 L230 44 L260 40 L280 46" stroke="#EC0000" stroke-width="2" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+                    <circle cx="100" cy="38" r="3.5" fill="#EC0000"/>
+                    <circle cx="160" cy="22" r="3.5" fill="#0E8A4F"/>
+                    <circle cx="230" cy="44" r="3.5" fill="#EC0000"/>
+                  </svg>
+                </div>
+
+                <div class="tl-events">
+                  <div class="ev">
+                    <div class="ev-date">QUI<b>13</b></div>
+                    <div class="ev-name">
+                      <div class="ev-name-t">MEO · subscrição</div>
+                      <div class="ev-cat">Recorrente</div>
+                    </div>
+                    <div class="ev-amount neg">−€42</div>
+                  </div>
+                  <div class="ev">
+                    <div class="ev-date">SEG<b>17</b></div>
+                    <div class="ev-name">
+                      <div class="ev-name-t">Renda casa</div>
+                      <div class="ev-cat">Habitação</div>
+                    </div>
+                    <div class="ev-amount neg">−€680</div>
+                  </div>
+                  <div class="ev">
+                    <div class="ev-date">QUI<b>20</b></div>
+                    <div class="ev-name">
+                      <div class="ev-name-t">Ordenado</div>
+                      <div class="ev-cat">Entrada</div>
+                    </div>
+                    <div class="ev-amount pos">+€2.140</div>
+                  </div>
+                  <div class="ev">
+                    <div class="ev-date">SEX<b>21</b></div>
+                    <div class="ev-name">
+                      <div class="ev-name-t">Cartão Débito</div>
+                      <div class="ev-cat">Pagamento</div>
+                    </div>
+                    <div class="ev-amount neg">−€286</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- =========== NBA VIEW =========== -->
+              <div class="view" data-view="action">
+                <div class="v-head">
+                  <button class="v-back" data-go-view="pulse">
+                    <svg style="width:12px;height:12px"><use href="#back"/></svg>
+                    Voltar
+                  </button>
+                  <div class="v-title">O que pode fazer</div>
+                  <div class="v-sub">3 ações ligadas aos seus insights</div>
+                </div>
+
+                <div class="nba-summary">
+                  <div class="tl-sum-k">⚡ Insight</div>
+                  <div class="tl-sum-t">
+                    Estas ações ligam-se ao que mudou esta semana. <b>Subem o seu Pulse +6 pts.</b>
+                  </div>
+                </div>
+
+                <div class="nba-list">
+                  <div class="nba">
+                    <div class="nba-icon"><svg><use href="#coin"/></svg></div>
+                    <div class="nba-body">
+                      <div class="nba-t">Reforçar poupança em €100/mês</div>
+                      <div class="nba-d">Tem margem sem comprometer obrigações previstas.</div>
+                      <div class="nba-cta">+2 pts no pulse</div>
+                    </div>
+                    <div class="nba-arrow">›</div>
+                  </div>
+                  <div class="nba">
+                    <div class="nba-icon"><svg><use href="#action"/></svg></div>
+                    <div class="nba-body">
+                      <div class="nba-t">Rever 3 subscrições pouco usadas</div>
+                      <div class="nba-d">Poupança estimada: €38/mês.</div>
+                      <div class="nba-cta">+1 pt no pulse</div>
+                    </div>
+                    <div class="nba-arrow">›</div>
+                  </div>
+                  <div class="nba">
+                    <div class="nba-icon"><svg><use href="#target"/></svg></div>
+                    <div class="nba-body">
+                      <div class="nba-t">Definir teto de €180 em restauração</div>
+                      <div class="nba-d">Mantém o pulse acima de 75 até final do mês.</div>
+                      <div class="nba-cta">+3 pts no pulse</div>
+                    </div>
+                    <div class="nba-arrow">›</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- =========== CHAT VIEW =========== -->
+              <div class="view" data-view="chat">
+                <div class="chat-head">
+                  <div class="chat-avatar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-6 4 12 2-6h6"/></svg>
+                  </div>
+                  <div>
+                    <div class="chat-name">Financial Pulse</div>
+                    <div class="chat-status">ativo agora</div>
+                  </div>
+                </div>
+                <div class="chat-thread">
+                  <div class="bubble bubble-bot">
+                    <div class="bubble-label">Financial Pulse &middot; agora</div>
+                    <div class="bubble-body">
+                      Inês, o teu Pulse caiu <b>3 pontos esta semana</b>. A principal causa é um aumento de <b>+&#8364;88 em restauração</b>. Queres perceber melhor?
+                      <div class="bubble-chips">
+                        <button class="bubble-chip">Sim, explica-me</button>
+                        <button class="bubble-chip">Ver timeline</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="bubble bubble-user">
+                    <div class="bubble-label">Tu</div>
+                    <div class="bubble-body">Sim, explica-me</div>
+                  </div>
+                  <div class="bubble bubble-bot">
+                    <div class="bubble-label">Financial Pulse</div>
+                    <div class="bubble-body">
+                      Em 7 dias gastaste <b>&#8364;140 em restauração</b>. A tua média habitual é <b>&#8364;52/mês</b>. Este desvio representa <b>75% da queda</b> no teu Pulse.<br><br>Posso sugerir um teto semanal de <b>&#8364;70</b> até ao fim do mês?
+                      <div class="bubble-chips">
+                        <button class="bubble-chip">Definir teto</button>
+                        <button class="bubble-chip">Ver mais detalhes</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="chat-topic-pills">
+                  <button class="ct-pill">O que mudou?</button>
+                  <button class="ct-pill">Próximos pgtos.</button>
+                  <button class="ct-pill">Poupar mais</button>
+                  <button class="ct-pill">Subscrições</button>
+                  <button class="ct-pill">Planear viagem</button>
+                </div>
+                <div class="chat-input-row">
+                  <div class="chat-input-field">Pergunta qualquer coisa…</div>
+                  <button class="chat-send">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="bnav">
+              <button class="bnav-item active">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12L12 3l9 9"/><path d="M5 10v10h5v-5h4v5h5V10"/></svg>
+                <span>Início</span>
+              </button>
+              <button class="bnav-item">
+                <svg><use href="#arrows"/></svg>
+                <span>Transferir</span>
+              </button>
+              <button class="bnav-item">
+                <svg><use href="#euro"/></svg>
+                <span>Pagar</span>
+              </button>
+              <button class="bnav-item">
+                <svg><use href="#gift"/></svg>
+                <span>Rewards</span>
+              </button>
+              <button class="bnav-item">
+                <svg><use href="#user"/></svg>
+                <span>Perfil</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT ANNOTATIONS -->
+      <div class="right-col">
+        <div class="anno active" data-anno="pulse">
+          <div class="anno-k">01 · O insight</div>
+          <div class="anno-t">Não é um score. É uma explicação.</div>
+          <div class="anno-d">Cada insight diz <b>o que mudou, porquê mudou, e em que peso.</b> O score é só o sinal — o insight é o produto.</div>
+        </div>
+        <div class="anno" data-anno="timeline">
+          <div class="anno-k">02 · A antecipação</div>
+          <div class="anno-t">Saber o que aí vem, antes de chegar.</div>
+          <div class="anno-d">Insight com calendário: <b>"tem cobertura, o ordenado entra antes da renda"</b>. Não é só uma lista de eventos.</div>
+        </div>
+        <div class="anno" data-anno="action">
+          <div class="anno-k">03 · A ação</div>
+          <div class="anno-t">Cada ação ligada a um insight.</div>
+          <div class="anno-d">A recomendação não aparece do nada — está sempre <b>amarrada a algo que mudou</b>. Comunicação comercial deixa de ser genérica.</div>
+        </div>
+        <div class="anno" data-anno="chat">
+          <div class="anno-k">04 · A conversa</div>
+          <div class="anno-t">O banco fala primeiro. O cliente responde.</div>
+          <div class="anno-d">Ao contrário do AIR da Revolut, o Financial Pulse <b>inicia ele próprio</b> com um insight. A conversa parte da inteligência, não da navegação.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="s2-foot">
+      <p class="footline">
+        Transações <strong>→</strong> padrões <strong>→</strong> <em style="color:#fff;font-style:normal;text-decoration:underline;text-decoration-color:var(--red);text-underline-offset:5px">insights explicáveis</em> <strong>→</strong> ações <strong>→</strong> conversa.
+      </p>
+      <div class="footindex">02 / 02</div>
+    </div>
+  </section>
+
+</div>
+
+<!-- CHROME -->
+<div class="chrome">
+  <button id="prev" aria-label="Anterior">‹</button>
+  <div class="dots">
+    <div class="dot active" data-go="1"></div>
+    <div class="dot" data-go="2"></div>
+  </div>
+  <button id="next" aria-label="Seguinte">›</button>
+  <span class="label" id="counter">01 / 02</span>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const dots = document.querySelectorAll('.dot');
+  const counter = document.getElementById('counter');
+  let current = 1;
+  const total = slides.length;
+
+  function go(n){
+    n = Math.max(1, Math.min(total, n));
+    if (n === current) return;
+    slides.forEach(s => s.classList.toggle('active', +s.dataset.slide === n));
+    dots.forEach(d => d.classList.toggle('active', +d.dataset.go === n));
+    counter.textContent = String(n).padStart(2,'0') + ' / ' + String(total).padStart(2,'0');
+    current = n;
+    if (n === 1) {
+      const qs = slides[0].querySelectorAll('.q, .answer');
+      qs.forEach(q => { q.style.animation = 'none'; void q.offsetWidth; q.style.animation = ''; });
+    }
+    if (n === 2) setView('pulse');
+  }
+
+  document.getElementById('prev').addEventListener('click', () => go(current - 1));
+  document.getElementById('next').addEventListener('click', () => go(current + 1));
+  dots.forEach(d => d.addEventListener('click', () => go(+d.dataset.go)));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(current + 1); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(current - 1); }
+    if (e.key === 'f' || e.key === 'F') { document.documentElement.requestFullscreen?.(); }
+  });
+
+  const views = document.querySelectorAll('.view');
+  const annos = document.querySelectorAll('.anno');
+
+  function setView(name){
+    views.forEach(v => v.classList.toggle('active', v.dataset.view === name));
+    annos.forEach(a => a.classList.toggle('active', a.dataset.anno === name));
+    if (name === 'pulse') resetAnimations();
+  }
+
+  annos.forEach(a => a.addEventListener('click', () => setView(a.dataset.anno)));
+  document.querySelectorAll('[data-go-view]').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setView(el.dataset.goView);
+    });
+  });
+
+  function resetAnimations(){
+    const ring = document.querySelector('.ring-fg');
+    if (ring) { ring.style.animation = 'none'; void ring.offsetWidth; ring.style.animation = ''; }
+    document.querySelectorAll('.why-bar').forEach(b => {
+      b.style.animation = 'none'; void b.offsetWidth; b.style.animation = '';
+    });
+  }
+</script>
+
+</body>
+</html>
